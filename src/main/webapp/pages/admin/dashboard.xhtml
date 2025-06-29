@@ -1,0 +1,420 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+<h:head>
+    <title>Hospital Management System</title>
+    <!-- Include Tailwind CSS and PrimeIcons -->
+    <h:outputStylesheet>
+        @import url('https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css');
+    </h:outputStylesheet>
+    <h:outputStylesheet library="primefaces" name="primeicons/primeicons.css"/>
+</h:head>
+
+<h:body class="h-screen w-screen overflow-hidden bg-gray-100">
+    <div class="flex flex-col h-full">
+        <!-- Top Bar -->
+        <div class="flex items-center justify-between bg-gradient-to-r from-blue-600 to-purple-600 text-white h-16 px-6 shadow-md">
+            <h1 class="text-xl font-bold">HOSPITAL MANAGEMENT SYSTEM</h1>
+            <div class="flex items-center space-x-4">
+                <span>Welcome, Admin</span>
+                <p:commandButton value="Logout" action="#{userBean.logout}"
+                                 styleClass="text-white hover:text-gray-200" icon="pi pi-sign-out"/>
+            </div>
+        </div>
+
+        <!-- Main Content Area with Sidebar -->
+        <div class="flex flex-1 overflow-hidden">
+            <!-- Sidebar -->
+            <div class="w-64 bg-gray-800 text-white p-4 overflow-y-auto">
+                <p:panelMenu styleClass="bg-gray-800 text-white" style="border:none">
+                    <p:submenu label="User Management" icon="pi pi-users" expanded="true">
+                        <p:menuitem value="Create Staff"
+                                    onclick="PF('createStaffDialog').show()"
+                                    icon="pi pi-user-plus" />
+                        <p:menuitem value="Create Doctor"
+                                    onclick="PF('createDoctorDialog').show()"
+                                    icon="pi pi-user-plus" />
+                        <p:menuitem value="View All Staff"
+                                    update=":staffTable"
+                                    oncomplete="PF('staffTable').filter()"
+                                    icon="pi pi-list" />
+                        <p:menuitem value="View All Doctors"
+                                    update=":doctorTable"
+                                    oncomplete="PF('doctorTable').filter()"
+                                    icon="pi pi-list" />
+                    </p:submenu>
+                </p:panelMenu>
+            </div>
+
+            <!-- Main Content Area -->
+            <div class="flex-1 p-6 overflow-y-auto">
+                <!-- Staff Management Section -->
+                <div class="mb-8">
+                    <h2 class="text-xl font-semibold mb-4 text-gray-700">Staff Management</h2>
+                    <p:dataTable id="staffTable" widgetVar="staffTable"
+                                 value="#{staffBean.staffList}" var="staff"
+                                 styleClass="w-full" paginator="true" rows="10"
+                                 filteredValue="#{staffBean.filteredStaff}"
+                                 emptyMessage="No staff found">
+                        <p:column headerText="ID" style="width:10%">
+                            <h:outputText value="#{staff.staffID}" />
+                        </p:column>
+                        <p:column headerText="Name" filterBy="#{staff.firstName}" filterMatchMode="contains">
+                            <h:outputText value="#{staff.firstName} #{staff.lastName}" />
+                        </p:column>
+                        <p:column headerText="Email" filterBy="#{staff.email}" filterMatchMode="contains">
+                            <h:outputText value="#{staff.email}" />
+                        </p:column>
+                        <p:column headerText="Role" filterBy="#{staff.role}" filterMatchMode="exact">
+                            <h:outputText value="#{staff.role}" />
+                        </p:column>
+                        <p:column headerText="Actions" style="width:15%">
+                            <p:commandButton icon="pi pi-pencil" title="Edit"
+                                             onclick="PF('editStaffDialog').show();"
+                                             update=":editStaffForm"
+                                             action="#{staffBean.loadStaff(staff.staffID)}" />
+                            <p:commandButton icon="pi pi-trash" title="Delete"
+                                             styleClass="ml-2"
+                                             update=":staffTable"
+                                             action="#{staffBean.delete(staff.staffID)}" />
+                        </p:column>
+                    </p:dataTable>
+                </div>
+
+                <!-- Doctor Management Section -->
+                <div class="mb-8">
+                    <h2 class="text-xl font-semibold mb-4 text-gray-700">Doctor Management</h2>
+                    <p:dataTable id="doctorTable" widgetVar="doctorTable"
+                                 value="#{doctorBean.doctors}" var="doctor"
+                                 styleClass="w-full" paginator="true" rows="10"
+                                 filteredValue="#{doctorBean.filteredDoctors}"
+                                 emptyMessage="No doctors found">
+                        <p:column headerText="ID" style="width:10%">
+                            <h:outputText value="#{doctor.doctorID}" />
+                        </p:column>
+                        <p:column headerText="Name" filterBy="#{doctor.firstName}" filterMatchMode="contains">
+                            <h:outputText value="#{doctor.firstName} #{doctor.lastName}" />
+                        </p:column>
+                        <p:column headerText="Email" filterBy="#{doctor.email}" filterMatchMode="contains">
+                            <h:outputText value="#{doctor.email}" />
+                        </p:column>
+                        <p:column headerText="Speciality" filterBy="#{doctor.speciality}" filterMatchMode="exact">
+                            <h:outputText value="#{doctor.speciality}" />
+                        </p:column>
+                        <p:column headerText="Actions" style="width:15%">
+                            <p:commandButton icon="pi pi-pencil" title="Edit"
+                                             onclick="PF('editDoctorDialog').show();"
+                                             update=":editDoctorForm"
+                                             action="#{doctorBean.loadDoctor(doctor.doctorID)}" />
+                            <p:commandButton icon="pi pi-trash" title="Delete"
+                                             styleClass="ml-2"
+                                             update=":doctorTable"
+                                             action="#{doctorBean.delete(doctor.doctorID)}" />
+                        </p:column>
+                    </p:dataTable>
+                </div>
+            </div>
+        </div>
+
+        <!-- Create Staff Dialog -->
+        <p:dialog header="Create New Staff" widgetVar="createStaffDialog" modal="true" styleClass="w-full max-w-2xl">
+            <h:form id="createStaffForm">
+                <div class="grid grid-cols-2 gap-4 p-4">
+                    <div class="col-span-2">
+                        <h3 class="font-medium text-lg mb-2">Personal Information</h3>
+                    </div>
+
+                    <div>
+                        <p:outputLabel for="staffFirstName" value="First Name" />
+                        <p:inputText id="staffFirstName" value="#{staffBean.staff.firstName}"
+                                     required="true" styleClass="w-full" />
+                    </div>
+
+                    <div>
+                        <p:outputLabel for="staffMiddleName" value="Middle Name" />
+                        <p:inputText id="staffMiddleName" value="#{staffBean.staff.middleName}"
+                                     styleClass="w-full" />
+                    </div>
+
+                    <div>
+                        <p:outputLabel for="staffLastName" value="Last Name" />
+                        <p:inputText id="staffLastName" value="#{staffBean.staff.lastName}"
+                                     required="true" styleClass="w-full" />
+                    </div>
+
+                    <div>
+                        <p:outputLabel for="staffDob" value="Date of Birth" />
+                        <p:calendar id="staffDob" value="#{staffBean.staff.dateOfBirth}"
+                                    pattern="yyyy-MM-dd" styleClass="w-full" />
+                    </div>
+
+                    <div>
+                        <p:outputLabel for="staffContact" value="Contact Number" />
+                        <p:inputText id="staffContact" value="#{staffBean.staff.contactNumber}"
+                                     required="true" styleClass="w-full" />
+                    </div>
+
+                    <div>
+                        <p:outputLabel for="staffEmail" value="Email" />
+                        <p:inputText id="staffEmail" value="#{staffBean.staff.email}"
+                                     required="true" styleClass="w-full" />
+                    </div>
+
+                    <div class="col-span-2 mt-4">
+                        <h3 class="font-medium text-lg mb-2">Account Information</h3>
+                    </div>
+
+                    <div>
+                        <p:outputLabel for="staffRole" value="Role" />
+                        <p:selectOneMenu id="staffRole" value="#{staffBean.userAccount.role}"
+                                         styleClass="w-full">
+                            <f:selectItems value="#{staffBean.roles}" var="role"
+                                           itemLabel="#{role}" itemValue="#{role}" />
+                        </p:selectOneMenu>
+                    </div>
+
+                    <div>
+                        <p:outputLabel for="staffPassword" value="Password" />
+                        <p:password id="staffPassword" value="#{staffBean.userAccount.password}"
+                                    feedback="false" required="true" styleClass="w-full" />
+                    </div>
+                </div>
+
+                <div class="flex justify-end p-4 border-t">
+                    <p:commandButton value="Create" action="#{staffBean.create}"
+                                     update="staffTable createStaffForm"
+                                     oncomplete="if(!args.validationFailed) PF('createStaffDialog').hide()"
+                                     styleClass="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded" />
+                    <p:commandButton value="Cancel" onclick="PF('createStaffDialog').hide()"
+                                     styleClass="ml-2 bg-gray-300 hover:bg-gray-400 text-gray-800 px-4 py-2 rounded" />
+                </div>
+            </h:form>
+        </p:dialog>
+
+        <!-- Edit Staff Dialog -->
+        <p:dialog header="Edit Staff" widgetVar="editStaffDialog" modal="true" styleClass="w-full max-w-2xl">
+            <h:form id="editStaffForm">
+                <div class="grid grid-cols-2 gap-4 p-4">
+                    <div class="col-span-2">
+                        <h3 class="font-medium text-lg mb-2">Personal Information</h3>
+                    </div>
+
+                    <div>
+                        <p:outputLabel for="editStaffFirstName" value="First Name" />
+                        <p:inputText id="editStaffFirstName" value="#{staffBean.staff.firstName}"
+                                     required="true" styleClass="w-full" />
+                    </div>
+
+                    <div>
+                        <p:outputLabel for="editStaffMiddleName" value="Middle Name" />
+                        <p:inputText id="editStaffMiddleName" value="#{staffBean.staff.middleName}"
+                                     styleClass="w-full" />
+                    </div>
+
+                    <div>
+                        <p:outputLabel for="editStaffLastName" value="Last Name" />
+                        <p:inputText id="editStaffLastName" value="#{staffBean.staff.lastName}"
+                                     required="true" styleClass="w-full" />
+                    </div>
+
+                    <div>
+                        <p:outputLabel for="editStaffDob" value="Date of Birth" />
+                        <p:calendar id="editStaffDob" value="#{staffBean.staff.dateOfBirth}"
+                                    pattern="yyyy-MM-dd" styleClass="w-full" />
+                    </div>
+
+                    <div>
+                        <p:outputLabel for="editStaffContact" value="Contact Number" />
+                        <p:inputText id="editStaffContact" value="#{staffBean.staff.contactNumber}"
+                                     required="true" styleClass="w-full" />
+                    </div>
+
+                    <div>
+                        <p:outputLabel for="editStaffEmail" value="Email" />
+                        <p:inputText id="editStaffEmail" value="#{staffBean.staff.email}"
+                                     required="true" styleClass="w-full" />
+                    </div>
+
+                    <div class="col-span-2 mt-4">
+                        <h3 class="font-medium text-lg mb-2">Account Information</h3>
+                    </div>
+
+                    <div>
+                        <p:outputLabel for="editStaffRole" value="Role" />
+                        <p:selectOneMenu id="editStaffRole" value="#{staffBean.userAccount.role}"
+                                         styleClass="w-full">
+                            <f:selectItems value="#{staffBean.roles}" var="role"
+                                           itemLabel="#{role}" itemValue="#{role}" />
+                        </p:selectOneMenu>
+                    </div>
+                </div>
+
+                <div class="flex justify-end p-4 border-t">
+                    <p:commandButton value="Update" action="#{staffBean.update}"
+                                     update="staffTable editStaffForm"
+                                     oncomplete="if(!args.validationFailed) PF('editStaffDialog').hide()"
+                                     styleClass="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded" />
+                    <p:commandButton value="Cancel" onclick="PF('editStaffDialog').hide()"
+                                     styleClass="ml-2 bg-gray-300 hover:bg-gray-400 text-gray-800 px-4 py-2 rounded" />
+                </div>
+            </h:form>
+        </p:dialog>
+
+        <!-- Create Doctor Dialog -->
+        <p:dialog header="Create New Doctor" widgetVar="createDoctorDialog" modal="true" styleClass="w-full max-w-2xl">
+            <h:form id="createDoctorForm">
+                <div class="grid grid-cols-2 gap-4 p-4">
+                    <div class="col-span-2">
+                        <h3 class="font-medium text-lg mb-2">Personal Information</h3>
+                    </div>
+
+                    <div>
+                        <p:outputLabel for="docFirstName" value="First Name" />
+                        <p:inputText id="docFirstName" value="#{doctorBean.doctor.get().firstName}"
+                                     required="true" styleClass="w-full" />
+                    </div>
+
+                    <div>
+                        <p:outputLabel for="docMiddleName" value="Middle Name" />
+                        <p:inputText id="docMiddleName" value="#{doctorBean.doctor.get().middleName}"
+                                     styleClass="w-full" />
+                    </div>
+
+                    <div>
+                        <p:outputLabel for="docLastName" value="Last Name" />
+                        <p:inputText id="docLastName" value="#{doctorBean.doctor.get().lastName}"
+                                     required="true" styleClass="w-full" />
+                    </div>
+
+                    <div>
+                        <p:outputLabel for="docDob" value="Date of Birth" />
+                        <p:calendar id="docDob" value="#{doctorBean.doctor.get().dateOfBirth}"
+                                    pattern="yyyy-MM-dd" styleClass="w-full" />
+                    </div>
+
+                    <div>
+                        <p:outputLabel for="docContact" value="Contact Number" />
+                        <p:inputText id="docContact" value="#{doctorBean.doctor.get().contactNumber}"
+                                     required="true" styleClass="w-full" />
+                    </div>
+
+                    <div>
+                        <p:outputLabel for="docEmail" value="Email" />
+                        <p:inputText id="docEmail" value="#{doctorBean.doctor.get().email}"
+                                     required="true" styleClass="w-full" />
+                    </div>
+
+                    <div class="col-span-2 mt-4">
+                        <h3 class="font-medium text-lg mb-2">Professional Information</h3>
+                    </div>
+
+                    <div>
+                        <p:outputLabel for="docSpeciality" value="Speciality" />
+                        <p:selectOneMenu id="docSpeciality" value="#{doctorBean.doctor.get().speciality}"
+                                         styleClass="w-full">
+                            <f:selectItems value="#{doctorBean.specialities}" var="spec"
+                                           itemLabel="#{spec}" itemValue="#{spec}" />
+                        </p:selectOneMenu>
+                    </div>
+                </div>
+
+                <div class="flex justify-end p-4 border-t">
+                    <p:commandButton value="Create" action="#{doctorBean.create}"
+                                     update="doctorTable createDoctorForm"
+                                     oncomplete="if(!args.validationFailed) PF('createDoctorDialog').hide()"
+                                     styleClass="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded" />
+                    <p:commandButton value="Cancel" onclick="PF('createDoctorDialog').hide()"
+                                     styleClass="ml-2 bg-gray-300 hover:bg-gray-400 text-gray-800 px-4 py-2 rounded" />
+                </div>
+            </h:form>
+        </p:dialog>
+
+        <!-- Edit Doctor Dialog -->
+        <p:dialog header="Edit Doctor" widgetVar="editDoctorDialog" modal="true" styleClass="w-full max-w-2xl">
+            <h:form id="editDoctorForm">
+                <div class="grid grid-cols-2 gap-4 p-4">
+                    <div class="col-span-2">
+                        <h3 class="font-medium text-lg mb-2">Personal Information</h3>
+                    </div>
+
+                    <div>
+                        <p:outputLabel for="editDocFirstName" value="First Name" />
+                        <p:inputText id="editDocFirstName" value="#{doctorBean.doctor.get().firstName}"
+                                     required="true" styleClass="w-full" />
+                    </div>
+
+                    <div>
+                        <p:outputLabel for="editDocMiddleName" value="Middle Name" />
+                        <p:inputText id="editDocMiddleName" value="#{doctorBean.doctor.get().middleName}"
+                                     styleClass="w-full" />
+                    </div>
+
+                    <div>
+                        <p:outputLabel for="editDocLastName" value="Last Name" />
+                        <p:inputText id="editDocLastName" value="#{doctorBean.doctor.get().lastName}"
+                                     required="true" styleClass="w-full" />
+                    </div>
+
+                    <div>
+                        <p:outputLabel for="editDocDob" value="Date of Birth" />
+                        <p:calendar id="editDocDob" value="#{doctorBean.doctor.get().dateOfBirth}"
+                                    pattern="yyyy-MM-dd" styleClass="w-full" />
+                    </div>
+
+                    <div>
+                        <p:outputLabel for="editDocContact" value="Contact Number" />
+                        <p:inputText id="editDocContact" value="#{doctorBean.doctor.get().contactNumber}"
+                                     required="true" styleClass="w-full" />
+                    </div>
+
+                    <div>
+                        <p:outputLabel for="editDocEmail" value="Email" />
+                        <p:inputText id="editDocEmail" value="#{doctorBean.doctor.get().email}"
+                                     required="true" styleClass="w-full" />
+                    </div>
+
+                    <div class="col-span-2 mt-4">
+                        <h3 class="font-medium text-lg mb-2">Professional Information</h3>
+                    </div>
+
+                    <div>
+                        <p:outputLabel for="editDocSpeciality" value="Speciality" />
+                        <p:selectOneMenu id="editDocSpeciality" value="#{doctorBean.doctor.get().speciality}"
+                                         styleClass="w-full">
+                            <f:selectItems value="#{doctorBean.specialities}" var="spec"
+                                           itemLabel="#{spec}" itemValue="#{spec}" />
+                        </p:selectOneMenu>
+                    </div>
+                </div>
+
+                <div class="flex justify-end p-4 border-t">
+                    <p:commandButton value="Update" action="#{doctorBean.update}"
+                                     update="doctorTable editDoctorForm"
+                                     oncomplete="if(!args.validationFailed) PF('editDoctorDialog').hide()"
+                                     styleClass="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded" />
+                    <p:commandButton value="Cancel" onclick="PF('editDoctorDialog').hide()"
+                                     styleClass="ml-2 bg-gray-300 hover:bg-gray-400 text-gray-800 px-4 py-2 rounded" />
+                </div>
+            </h:form>
+        </p:dialog>
+
+        <!-- Messages for feedback -->
+        <p:growl id="messages" showDetail="true" sticky="false" life="3000" />
+
+        <!-- Loading dialog -->
+        <p:ajaxStatus onstart="PF('statusDialog').show()" oncomplete="PF('statusDialog').hide()" />
+        <p:dialog widgetVar="statusDialog" modal="true" draggable="false" closable="false"
+                  resizable="false" showHeader="false" styleClass="border-none bg-transparent shadow-none">
+            <div class="flex items-center justify-center p-6 bg-white rounded-lg shadow-xl">
+                <div class="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+                <span class="ml-3 text-gray-700">Processing...</span>
+            </div>
+        </p:dialog>
+    </div>
+</h:body>
+</html>
