@@ -1,12 +1,13 @@
 package org.example.services;
 
 import org.example.dao.PatientDAO;
-import org.example.utilies.HibernateUtil;
+import org.example.utilities.HibernateUtil;
 import org.example.models.entities.Patient;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 
 import java.util.List;
+import java.util.Optional;
 
 public class PatientService extends PersonelService {
     private final PatientDAO patientDAO;
@@ -31,7 +32,7 @@ public class PatientService extends PersonelService {
     }
 
     // Method to find a patient by ID
-    public Patient findPatientById(Long id) {
-        return patientDAO.getByID(id);
+    public Optional<Patient> findPatientById(Long id) {
+        return patientDAO.getById(id);
     }
 }
