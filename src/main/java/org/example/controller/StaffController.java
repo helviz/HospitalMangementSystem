@@ -17,6 +17,7 @@ import org.example.views.UserView;
 import java.time.LocalDate;
 import java.util.InputMismatchException;
 import java.util.List;
+import java.util.Optional;
 import java.util.Scanner;
 
 
@@ -129,7 +130,7 @@ public class StaffController implements UpdateCredentials {
         Scanner scanner = new Scanner(System.in);
         try {
             Long input = scanner.nextLong();
-            Staff staff = new StaffService().findStaffById(input);
+            Optional<Staff> staff = new StaffService().findStaffById(input);
             System.out.println(staff);
 
         } catch (InputMismatchException e){

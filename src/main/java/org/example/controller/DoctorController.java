@@ -20,10 +20,7 @@ import org.example.views.DoctorView;
 import org.example.views.UserView;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.InputMismatchException;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 
 public class DoctorController implements UpdateCredentials {
     DoctorView view= new DoctorView();
@@ -192,7 +189,7 @@ public class DoctorController implements UpdateCredentials {
         Scanner scanner = new Scanner(System.in);
         try {
             Long input = scanner.nextLong();
-            Doctor doctor = new DoctorService().findDoctorById(input);
+            Optional<Doctor> doctor = new DoctorService().findDoctorById(input);
             System.out.println(doctor);
 
         } catch (InputMismatchException e){
