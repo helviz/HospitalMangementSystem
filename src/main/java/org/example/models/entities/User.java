@@ -1,10 +1,11 @@
 package org.example.models.entities;
-import javax.persistence.*;
+import jakarta.persistence.*;
 import org.example.enums.Role;
+import org.example.models.base.SoftDeletable;
 
 @Entity
 @Table(name = "users")
-public class User {
+public class User implements SoftDeletable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="user_id")
@@ -26,15 +27,20 @@ public class User {
     @OneToOne(mappedBy = "userAccount", cascade = CascadeType.ALL)
     private Staff staff;
 
+    private boolean deleted = false;
+
     public User(String email, Role role , String password){
         this.email = email;
         this.role = role;
         this.password = password;
     }
 
+    public User() {
+
+    }
 
 
-//    setters and getters
+    //    setters and getters
     public void setUserId(Long userId){
         this.userId = userId;
     }
@@ -82,6 +88,16 @@ public class User {
 
     public String getPassword(){
         return this.password;
+    }
+
+    @Override
+    public void setDelete(boolean deleted) {
+        this.deleted = deleted;
+    }
+
+    @Override
+    public boolean isDelete() {
+        return this.deleted;
     }
 
 }

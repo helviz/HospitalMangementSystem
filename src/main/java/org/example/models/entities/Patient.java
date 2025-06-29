@@ -1,12 +1,11 @@
 package org.example.models.entities;
-import javax.persistence.*;
+import jakarta.persistence.*;
 import org.example.models.base.SoftDeletable;
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 @Table(name="patients")
-@Inheritance(strategy = InheritanceType.JOINED)
 public class Patient extends Personel implements SoftDeletable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

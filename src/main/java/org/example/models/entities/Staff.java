@@ -1,5 +1,5 @@
 package org.example.models.entities;
-import javax.persistence.*;
+import jakarta.persistence.*;
 import org.example.enums.Role;
 import org.example.models.base.SoftDeletable;
 
@@ -15,7 +15,7 @@ public class Staff extends Personel implements SoftDeletable {
     private Role role;
     private boolean deleted = false;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name= "user_id")
     private User userAccount;
 

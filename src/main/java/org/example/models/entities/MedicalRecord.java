@@ -1,5 +1,5 @@
 package org.example.models.entities;
-import javax.persistence.*;
+import jakarta.persistence.*;
 import org.example.models.base.SoftDeletable;
 
 import java.time.LocalDate;
