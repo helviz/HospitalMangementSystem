@@ -9,6 +9,7 @@ import org.example.views.PatientView;
 import java.time.LocalDate;
 import java.util.InputMismatchException;
 import java.util.List;
+import java.util.Optional;
 import java.util.Scanner;
 
 public class PatientController  implements UpdateCredentials  {
@@ -103,7 +104,7 @@ public class PatientController  implements UpdateCredentials  {
         Scanner scanner = new Scanner(System.in);
         try {
             Long input = scanner.nextLong();
-            Patient patient = new PatientService().findPatientById(input);
+            Optional<Patient> patient = new PatientService().findPatientById(input);
             System.out.println(patient);
 
         } catch (InputMismatchException e){
