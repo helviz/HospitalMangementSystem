@@ -14,12 +14,13 @@ import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+
 @Model
-public class MedicalRecordDAO extends BaseDAO<MedicalRecord> implements Serializable {
-    public MedicalRecordDAO(){
+public class MedicalRecordDAO extends BaseDAO<MedicalRecord>  implements Serializable {
+
+    public MedicalRecordDAO() {
         super(MedicalRecord.class);
     }
-
     /**
      * Create a new medical record
      */

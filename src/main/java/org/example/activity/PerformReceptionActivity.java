@@ -47,7 +47,7 @@ public class PerformReceptionActivity {
     private void managePatients(){
         System.out.println("Enter an operation to perform: " +
                 "\n1. Create Patient." +
-                "\n2. Update Patent Details"
+                "\n2. Update Patient Details"
                 );
         Scanner scanner = new Scanner(System.in);
 
