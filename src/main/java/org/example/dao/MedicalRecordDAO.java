@@ -1,5 +1,6 @@
 package org.example.dao;
 
+import jakarta.enterprise.inject.Model;
 import org.example.models.entities.MedicalRecord;
 import org.example.models.entities.Doctor;
 import org.example.models.entities.Patient;
@@ -9,11 +10,15 @@ import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.hibernate.query.Query;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
-
-public class MedicalRecordDAO {
+@Model
+public class MedicalRecordDAO extends BaseDAO<MedicalRecord> implements Serializable {
+    public MedicalRecordDAO(){
+        super(MedicalRecord.class);
+    }
 
     /**
      * Create a new medical record
