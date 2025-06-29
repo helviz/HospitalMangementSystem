@@ -1,6 +1,6 @@
 package org.example.models.entities;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import org.example.enums.AppointmentStatus;
 import org.example.models.base.SoftDeletable;
 
@@ -12,13 +12,13 @@ import java.util.Date;
 public class Appointment implements SoftDeletable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name ="appointment_id")
+    @Column(name="appointment_id")
     private Long appointmentID;
 
-    @Column(name= "appointment_date_time")
+    @Column(name="appointment_date_time")
     private LocalDate appointmentDateTime;
 
-    @Column( name = "appointment_status")
+    @Column(name ="appointment_status")
     @Enumerated(EnumType.STRING)
     private AppointmentStatus status;
 
@@ -31,11 +31,11 @@ public class Appointment implements SoftDeletable {
     private Doctor doctor;
     private boolean deleted = false;
 
-    public void setappointmentID(Long appointmentID) {
+    public void setAppointmentID(Long appointmentID) {
         this.appointmentID = appointmentID;
     }
 
-    public Long getappointmentID() {
+    public Long getAppointmentID() {
         return appointmentID;
     }
 

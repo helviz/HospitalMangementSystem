@@ -1,7 +1,8 @@
 package org.example.models.entities;
+import jakarta.persistence.*;
 import org.example.enums.Speciality;
 import org.example.models.base.SoftDeletable;
-import javax.persistence.*;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,7 +14,7 @@ public class Doctor extends Personel implements SoftDeletable {
     @Column(name = "doctor_id")
     private Long doctorID;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name= "user_account_id")
     private User userAccount;
 
