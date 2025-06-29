@@ -1,4 +1,5 @@
 package org.example.dao;
+import jakarta.enterprise.inject.Model;
 import org.example.enums.Speciality;
 import org.example.models.entities.Doctor;
 
@@ -7,13 +8,14 @@ import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.hibernate.query.Query;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.function.Consumer;
 
 
 import java.time.LocalDate;
-
-public class DoctorDAO extends BaseDAO<Doctor> {
+@Model
+public class DoctorDAO extends BaseDAO<Doctor>  implements Serializable {
     public DoctorDAO() {
         super(Doctor.class);
     }

@@ -1,12 +1,15 @@
 package org.example.dao;
 
+import jakarta.enterprise.inject.Model;
 import org.example.models.entities.User;
 import org.example.utilities.HibernateUtil;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.hibernate.query.Query;
 
-public class AuthenticationDAO {
+import java.io.Serializable;
+@Model
+public class AuthenticationDAO  implements Serializable {
 
     public User authenticateUser(String inputEmail, String inputPassword){
         try(Session session = HibernateUtil.getSessionFactory().getCurrentSession()){
