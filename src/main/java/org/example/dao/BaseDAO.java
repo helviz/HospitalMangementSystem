@@ -1,99 +1,103 @@
 package org.example.dao;
 
-import org.example.utilities.HibernateUtil;
 import org.example.models.base.SoftDeletable;
-import org.hibernate.HibernateException;
+import org.example.models.entities.Doctor;
+import org.example.utilities.HibernateUtil;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.hibernate.query.Query;
 
-
 import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
-public abstract class BaseDAO<T extends SoftDeletable>{
-    private final Class<T> ObjectClass;
-    private String table ;
+public abstract class BaseDAO<T extends SoftDeletable> {
+    private final Class<T> entityClass;
 
-
-    protected BaseDAO(Class<T> ObjectClass){
-        this.ObjectClass = ObjectClass;
-        this.table = ObjectClass.getSimpleName();
+    protected BaseDAO(Class<T> entityClass) {
+        this.entityClass = entityClass;
     }
 
-//    retrieve from DB
-    public T getByID(Long ID){
-        try(Session session = HibernateUtil.getSessionFactory().getCurrentSession())
-        {
-            return session.get(ObjectClass, ID);
-        } catch (HibernateException e) {
-            System.out.println("Error: " + e.getMessage());
-            return  null;
-        }
-    }
-    public List<T> getByName(String name){
-        try(Session session = HibernateUtil.getSessionFactory().getCurrentSession())
-        {
-            Query<T> query = session.createQuery("From " + table + " as t WHERE t.firstName=:name or t.middleName=:name or t.lastName =:name" );
-            query.setParameter("name", name);
-            List list = query.getResultList();
-            return list;
-        } catch (HibernateException e){
-            System.out.println("Error in getByName:" + e.getMessage());
-            return Collections.emptyList();
-        }
-    }
-    public List<T> getAll (){
-        try(Session session = HibernateUtil.getSessionFactory().getCurrentSession())
-        {
-            Query<T> query = session.createQuery("FROM " + table, ObjectClass);
-            List list = query.getResultList();
-            return list;
-        } catch (HibernateException e){
-            System.out.println("Error in getAll:" + e.getMessage());
-            return Collections.emptyList();
-        }
-    }
-
-//    Update
-
-//    SOFT DELETE
-    public void deleteByID(Long ID){
-        try(Session session = HibernateUtil.getSessionFactory().getCurrentSession()){
-            session.beginTransaction();
-            T obj = session.get(ObjectClass, ID);
-            if (obj != null) {
-                obj.setDelete(true); // Now compiler accepts this
-                session.update(obj);
+    public Optional<T> getById(Long id) {
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            T entity = session.get(entityClass, id);
+            if (entity != null && !entity.isDelete()) {
+                return Optional.of(entity);
             }
-            session.getTransaction().commit();
-
-
-
-        } catch (HibernateException e){
-            System.out.println("Error in deleting:" + e.getMessage());
+            return Optional.empty();
+        } catch (Exception e) {
+            System.out.println("Error fetching " + entityClass.getSimpleName() + ": " + e.getMessage());
+            return Optional.empty();
         }
     }
 
-//    saving
-    public void saveToDB(T obj){
-        try (Session session = HibernateUtil.getSessionFactory().getCurrentSession()){
-            Transaction tx = session.beginTransaction();
-            session.saveOrUpdate(obj);
-            tx.commit();
-        } catch (HibernateException e){
-            System.out.println("Error in saving:" + e.getMessage());
+    public List<T> getByName(String name) {
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            Query<T> query = session.createQuery(
+                    "FROM " + entityClass.getSimpleName() + " WHERE firstName LIKE :name OR lastName LIKE :name AND deleted = false",
+                    entityClass
+            );
+            query.setParameter("name", "%" + name + "%");
+            return query.getResultList();
+        } catch (Exception e) {
+            System.out.println("Error searching by name: " + e.getMessage());
+            return Collections.emptyList();
         }
     }
 
-    //    Updates
-    public void updateFirstNameField(Long id, String name){}
-    public void updateMiddleNameField(Long id, String name){}
-    public void updateLastNameField(Long Id, String name){}
-    public void updateEmailField(Long id, String email){}
-    public void updateContactNumberField(Long id, String contactNumber){}
-    public void updateDateOfBirthField(Long id, LocalDate dateOfBirth){}
+    public List<T> getAll() {
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            Query<T> query = session.createQuery(
+                    "FROM " + entityClass.getSimpleName() + " WHERE deleted = false",
+                    entityClass
+            );
+            return query.getResultList();
+        } catch (Exception e) {
+            System.out.println("Error fetching all " + entityClass.getSimpleName() + ": " + e.getMessage());
+            return Collections.emptyList();
+        }
+    }
 
+    public boolean saveToDB(Optional<T> entity) {
+        Transaction transaction = null;
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            transaction = session.beginTransaction();
+            session.saveOrUpdate(entity);
+            transaction.commit();
+            return true;
+        } catch (Exception e) {
+            if (transaction != null) {
+                transaction.rollback();
+            }
+            System.out.println("Error saving " + entityClass.getSimpleName() + ": " + e.getMessage());
+            return false;
+        }
+    }
 
+    public void deleteByID(Long id) {
+        Transaction transaction = null;
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            transaction = session.beginTransaction();
+            T entity = session.get(entityClass, id);
+            if (entity != null) {
+                entity.setDelete(true);
+                session.update(entity);
+            }
+            transaction.commit();
+        } catch (Exception e) {
+            if (transaction != null) {
+                transaction.rollback();
+            }
+            System.out.println("Error soft deleting " + entityClass.getSimpleName() + ": " + e.getMessage());
+        }
+    }
+
+    // Field update methods
+    public void updateFirstNameField(Long id, String name) {}
+    public void updateMiddleNameField(Long id, String name) {}
+    public void updateLastNameField(Long id, String name) {}
+    public void updateEmailField(Long id, String email) {}
+    public void updateContactNumberField(Long id, String contactNumber) {}
+    public void updateDateOfBirthField(Long id, LocalDate dateOfBirth) {}
 }

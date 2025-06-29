@@ -1,5 +1,6 @@
 package org.example.dao;
 
+import jakarta.enterprise.inject.Model;
 import org.example.models.entities.Appointment;
 import org.example.models.entities.Doctor;
 import org.example.models.entities.Patient;
@@ -10,12 +11,17 @@ import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.hibernate.query.Query;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
-public class AppointmentDAO {
+@Model
+public class AppointmentDAO extends BaseDAO<Appointment> implements Serializable {
 
+    public AppointmentDAO() {
+        super(Appointment.class);
+    }
     /**
      * Create a new appointment
      */

@@ -1,15 +1,21 @@
 package org.example.dao;
 
+import jakarta.enterprise.inject.Model;
+import org.example.enums.Role;
 import org.example.models.entities.Staff;
 import org.example.utilities.HibernateUtil;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
+import org.hibernate.query.Query;
+
+import java.io.Serializable;
+import java.util.List;
 import java.util.function.Consumer;
 
 
 import java.time.LocalDate;
-
-public class StaffDAO extends BaseDAO<Staff>{
+@Model
+public class StaffDAO extends BaseDAO<Staff> implements Serializable {
     public StaffDAO(){
         super(Staff.class);
     }
@@ -23,6 +29,20 @@ public class StaffDAO extends BaseDAO<Staff>{
                 session.update(staff);
                 tx.commit();
             }
+        }
+    }
+
+    public List<Staff> getStaffByRole(Role role) {
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            Query<Staff> query = session.createQuery(
+                    "FROM Staff WHERE role = :role AND deleted = false ORDER BY lastName, firstName",
+                    Staff.class
+            );
+            query.setParameter("role", role);
+            return query.getResultList();
+        } catch (Exception e) {
+            System.out.println("Error fetching staff by role: " + e.getMessage());
+            return List.of();
         }
     }
 

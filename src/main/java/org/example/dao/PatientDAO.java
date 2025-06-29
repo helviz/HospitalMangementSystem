@@ -1,15 +1,20 @@
 package org.example.dao;
 
+import jakarta.enterprise.inject.Model;
 import org.example.models.entities.Patient;
 import org.example.utilities.HibernateUtil;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
+import org.hibernate.query.Query;
+
+import java.io.Serializable;
+import java.util.List;
 import java.util.function.Consumer;
 
 
 import java.time.LocalDate;
-
-public class PatientDAO extends BaseDAO<Patient>{
+@Model
+public class PatientDAO extends BaseDAO<Patient> implements Serializable {
     public PatientDAO(){
         super(Patient.class);
     }
@@ -22,6 +27,21 @@ public class PatientDAO extends BaseDAO<Patient>{
                 session.update(patient);
                 tx.commit();
             }
+        }
+    }
+
+    public List<Patient> searchPatients(String keyword) {
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            Query<Patient> query = session.createQuery(
+                    "FROM Patient WHERE (firstName LIKE :keyword OR lastName LIKE :keyword OR email LIKE :keyword) " +
+                            "AND deleted = false ORDER BY lastName, firstName",
+                    Patient.class
+            );
+            query.setParameter("keyword", "%" + keyword + "%");
+            return query.getResultList();
+        } catch (Exception e) {
+            System.out.println("Error searching patients: " + e.getMessage());
+            return List.of();
         }
     }
 

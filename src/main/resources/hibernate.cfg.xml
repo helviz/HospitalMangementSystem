@@ -7,12 +7,15 @@
 
         <!-- Database connection settings for PostgreSQL -->
         <property name="hibernate.connection.driver_class">org.postgresql.Driver</property>
-        <property name="hibernate.connection.url">jdbc:postgresql://localhost:5432/hmz</property>
+        <property name="hibernate.connection.url">jdbc:postgresql://localhost:5432/hm3</property>
         <property name="hibernate.connection.username">twomoelvis</property>
         <property name="hibernate.connection.password">emt@1968</property>
 
         <!-- PostgreSQL dialect -->
         <property name="hibernate.dialect">org.hibernate.dialect.PostgreSQLDialect</property>
+
+        <!-- ADD THIS PROPERTY -->
+        <property name="hibernate.current_session_context_class">thread</property>
 
         <!-- Show SQL queries -->
         <property name="hibernate.show_sql">true</property>
