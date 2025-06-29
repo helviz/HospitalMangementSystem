@@ -1,7 +1,5 @@
 package org.example.models.entities;
-
 import jakarta.persistence.*;
-
 import java.time.LocalDate;
 
 @MappedSuperclass
@@ -22,7 +20,7 @@ public class Personel {
     @Column(name="contact_number")
     private String contactNumber;
 
-    @Column(name="email")
+    @Column(name="email ")
     private String email;
 
 //    setters and getters
