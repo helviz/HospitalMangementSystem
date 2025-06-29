@@ -1,12 +1,13 @@
 package org.example.services;
 
 import org.example.dao.StaffDAO;
-import org.example.utilies.HibernateUtil;
+import org.example.utilities.HibernateUtil;
 import org.example.models.entities.Staff;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 
 import java.util.List;
+import java.util.Optional;
 
 public class StaffService extends PersonelService {
     private final StaffDAO staffDAO;
@@ -31,8 +32,8 @@ public class StaffService extends PersonelService {
     }
 
     // Method to find a staff by ID
-    public Staff findStaffById(Long id) {
-        return staffDAO.getByID(id);
+    public Optional<Staff> findStaffById(Long id) {
+        return staffDAO.getById(id);
     }
 
 }
