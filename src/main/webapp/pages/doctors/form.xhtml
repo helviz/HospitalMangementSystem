@@ -1,0 +1,276 @@
+<ui:composition template="/pages/templates/layout.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
+    <ui:define name="content">
+        <div class="max-w-4xl mx-auto p-6 bg-white rounded-lg shadow-lg" style=" margin-top: 5%">
+        <!-- Header -->
+        <div class="mb-8">
+            <div class="flex justify-center">
+                <h1 class="text-3xl font-bold text-gray-800 mb-2">
+                    <i class="pi pi-user-plus text-blue-600 mr-3"></i>
+                    #{doctorFormBean.formTitle}
+                </h1>
+            </div>
+            <div class="flex justify-center">
+                <p class="text-gray-600">Fill in the Doctor information below</p>
+            </div>
+        </div>
+
+        <!-- Form -->
+        <h:form id="doctorForm" styleClass="space-y-6">
+            <!-- Messages -->
+            <div class="mb-6">
+                <p:messages id="messages" showDetail="true" closable="true"
+                            styleClass="p-3 mb-4 text-sm border rounded-lg bg-red-50 border-red-200 text-red-800"
+                            warnClass="p-3 mb-4 text-sm border rounded-lg bg-yellow-50 border-yellow-200 text-yellow-800"
+                            infoClass="p-3 mb-4 text-sm border rounded-lg bg-green-50 border-green-200 text-green-800"/>
+            </div>
+
+            <!-- Personal Information Section -->
+            <div class="bg-gray-50 p-6 rounded-lg border border-gray-200">
+                <h2 class="text-xl font-semibold text-gray-800 mb-4 flex items-center">
+                    <i class="pi pi-user text-blue-600 mr-2"></i>
+                    Personal Information
+                </h2>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- First Name -->
+                    <div class="space-y-2">
+                        <label for="firstName" class="block text-sm font-medium text-gray-700">
+                            First Name <span class="text-red-500">*</span>
+                        </label>
+                        <p:inputText id="firstName"
+                                     value="#{doctorFormBean.doctor.firstName}"
+                                     required="true"
+                                     requiredMessage="First name is required"
+                                     maxlength="50"
+                                     styleClass="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                     placeholder="Enter first name"/>
+                        <p:message for="firstName" styleClass="text-red-500 text-sm"/>
+                    </div>
+
+                    <!-- Middle Name -->
+                    <div class="space-y-2">
+                        <label for="middleName" class="block text-sm font-medium text-gray-700">
+                            Middle Name
+                        </label>
+                        <p:inputText id="middleName"
+                                     value="#{doctorFormBean.doctor.middleName}"
+                                     maxlength="50"
+                                     styleClass="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                     placeholder="Enter middle name (optional)"/>
+                        <p:message for="middleName" styleClass="text-red-500 text-sm"/>
+                    </div>
+
+                    <!-- Last Name -->
+                    <div class="space-y-2">
+                        <label for="lastName" class="block text-sm font-medium text-gray-700">
+                            Last Name <span class="text-red-500">*</span>
+                        </label>
+                        <p:inputText id="lastName"
+                                     value="#{doctorFormBean.doctor.lastName}"
+                                     required="true"
+                                     requiredMessage="Last name is required"
+                                     maxlength="50"
+                                     styleClass="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                     placeholder="Enter last name"/>
+                        <p:message for="lastName" styleClass="text-red-500 text-sm"/>
+                    </div>
+
+                    <!-- Date of Birth -->
+                    <div class="space-y-2">
+                        <label for="dateOfBirth" class="block text-sm font-medium text-gray-700">
+                            Date of Birth <span class="text-red-500">*</span>
+                        </label>
+                        <p:datePicker id="dateOfBirth"
+                                      value="#{doctorFormBean.doctor.dateOfBirth}"
+                                      pattern="dd/MM/yyyy"
+                                      required="true"
+                                      requiredMessage="Date of birth is required"
+                                      showIcon="true"
+                                      styleClass="w-full"
+                                      monthNavigator="true"
+                                      yearNavigator="true"
+                                      mindate="#{calendarViewBean.minDate}"
+                                      maxdate="#{calendarViewBean.maxDate}"
+                                      placeholder="Select date of birth"/>
+                        <p:message for="dateOfBirth" styleClass="text-red-500 text-sm"/>
+                    </div>
+                </div>
+            </div>
+            <!-- Contact Information Section -->
+            <div class="bg-gray-50 p-6 rounded-lg border border-gray-200">
+                <h2 class="text-xl font-semibold text-gray-800 mb-4 flex items-center">
+                    <i class="pi pi-phone text-blue-600 mr-2"></i>
+                    Contact Information
+                </h2>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Email -->
+                    <div class="space-y-2">
+                        <label for="email" class="block text-sm font-medium text-gray-700">
+                            Email Address <span class="text-red-500">*</span>
+                        </label>
+                        <p:inputText id="email"
+                                     value="#{doctorFormBean.doctor.email}"
+                                     required="true"
+                                     requiredMessage="Email address is required"
+                                     validatorMessage="Please enter a valid email address"
+                                     maxlength="100"
+                                     styleClass="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                     placeholder="Enter email address">
+                            <f:validateRegex pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"/>
+                        </p:inputText>
+                        <p:message for="email" styleClass="text-red-500 text-sm"/>
+                    </div>
+
+                    <!-- Contact Number -->
+                    <div class="space-y-2">
+                        <label for="contactNumber" class="block text-sm font-medium text-gray-700">
+                            Contact Number <span class="text-red-500">*</span>
+                        </label>
+                        <p:inputText id="contactNumber"
+                                     value="#{doctorFormBean.doctor.contactNumber}"
+                                     required="true"
+                                     requiredMessage="Contact number is required"
+                                     validatorMessage="Please enter a valid contact number"
+                                     maxlength="15"
+                                     styleClass="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                     placeholder="Enter number 7********">
+                            <f:validateRegex pattern="^[\+]?[\d\s\-\(\)]{7,15}$"/>
+                        </p:inputText>
+                        <p:message for="contactNumber" styleClass="text-red-500 text-sm"/>
+                    </div>
+                </div>
+            </div>
+            <!--                Speciality -->
+
+            <div class="bg-gray-50 p-6 rounded-lg border border-gray-200">
+                <h2 class="text-xl font-semibold text-gray-800 mb-4 flex items-center">
+                    <i class=" text-blue-600 mr-2"></i>
+                    Medical Speciality
+                </h2>
+                <div class="space-y-2">
+                    <label for="speciality" class="block text-sm font-medium text-gray-700">
+                        Speciality <span class="text-red-500">*</span>
+                    </label>
+                    <p:selectOneMenu id="speciality"
+                                     value="#{doctorFormBean.doctor.speciality}"
+                                     required="true"
+                                     requiredMessage="Speciality is required"
+                                     styleClass="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    <f:selectItem itemLabel="Select Speciality" itemValue=""/>
+                    <f:selectItems value="#{doctorFormBean.specialities}"/>
+                    </p:selectOneMenu>
+                </div>
+                <p:message for="speciality" styleClass="text-red-500 text-sm"/>
+            </div>
+
+
+            <!--                password-->
+
+            <!-- Password -->
+            <div class="bg-gray-50 p-6 rounded-lg border border-gray-200">
+                <h2 class="text-xl font-semibold text-gray-800 mb-4 flex items-center">
+                    <i class="pi pi-shield text-blue-600 mr-2"></i>
+                    Password
+                </h2>
+
+                <h:panelGroup>
+                    <div class="space-y-2">
+                        <label for="password" class="block text-sm font-medium text-gray-700">
+                            Password <span class="text-red-500">*</span>
+                        </label>
+                        <p:password id="password"
+                                    value="#{doctorFormBean.userPassword}"
+                                    required="true"
+                                    requiredMessage="Password is required"
+                                    validatorMessage="Password must be at least 6 characters long"
+                                    styleClass="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                    placeholder="Enter password">
+                            <f:validateLength minimum="6"/>
+                        </p:password>
+                        <p:message for="password" styleClass="text-red-500 text-sm"/>
+                    </div>
+                </h:panelGroup>
+            </div>
+
+
+
+            <!-- Form Actions -->
+            <div class="flex flex-col sm:flex-row justify-between items-center gap-4 pt-6 border-t border-gray-200">
+                <!-- Save Button - Left -->
+                <div class="flex-1 flex justify-start">
+                    <p:commandButton id="saveButton"
+                                     value="#{doctorFormBean.submitButtonText}"
+                                     action="#{doctorFormBean.saveDoctor}"
+                                     update="messages"
+                                     process="@form"
+                                     ajax="false"
+                                     styleClass="px-6 py-3 bg-blue-600 text-white font-medium rounded-md shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors duration-200"
+                                     icon="pi pi-save"/>
+                </div>
+
+                <!-- Reset Button - Center -->
+                <div class="flex-1 flex justify-center">
+                    <p:commandButton id="resetButton"
+                                     value="Reset Form"
+                                     action="#{doctorFormBean.resetForm}"
+                                     update="doctorForm"
+                                     process="@this"
+                                     ajax="false"
+                                     styleClass="px-6 py-3 bg-gray-600 text-white font-medium rounded-md shadow-sm hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors duration-200"
+                                     icon="pi pi-refresh">
+                        <p:confirm header="Confirmation"
+                                   message="Are you sure you want to reset the form? All entered data will be lost."
+                                   icon="pi pi-exclamation-triangle"/>
+                    </p:commandButton>
+                </div>
+
+
+                <!-- Cancel Button - Right -->
+                <div class="flex-1 flex justify-end">
+                    <p:commandButton id="cancelButton"
+                                     value="Cancel"
+                                     action="#{doctorFormBean.cancelForm}"
+                                     ajax="false"
+                                     styleClass="px-6 py-3 bg-white text-gray-700 font-medium rounded-md border border-gray-300 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors duration-200"
+                                     icon="pi pi-times">
+                        <p:confirm header="Confirmation"
+                                   message="Are you sure you want to cancel? Any unsaved changes will be lost."
+                                   icon="pi pi-exclamation-triangle"/>
+                    </p:commandButton>
+                </div>
+            </div>
+
+            <!-- Confirmation Dialog -->
+            <p:confirmDialog global="true"
+                             showEffect="fade"
+                             hideEffect="fade"
+                             styleClass="shadow-lg">
+                <p:commandButton value="Yes"
+                                 type="button"
+                                 styleClass="ui-confirmdialog-yes px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
+                                 icon="pi pi-check"/>
+                <p:commandButton value="No"
+                                 type="button"
+                                 styleClass="ui-confirmdialog-no px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700"
+                                 icon="pi pi-times"/>
+            </p:confirmDialog>
+        </h:form>
+        </div>
+    </ui:define>
+</ui:composition>
+
+
+
+
+
+
+
+
+
+
