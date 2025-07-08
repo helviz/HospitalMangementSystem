@@ -1,0 +1,154 @@
+
+<ui:composition template="/pages/templates/layout.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                xsi:schemaLocation="http://xmlns.jcp.org/jsf/core ">
+    <ui:define name="content">
+        <div class="card">
+
+            <h5 class="text-2xl/7 font-bold text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight text-center">
+                DOCTOR MANAGEMENT
+            </h5>
+
+            <h:form id="doctorForm">
+                <p:growl id="messages" showDetail="true" autoUpdate="true"/>
+
+                <div class="card">
+                    <div class="flex justify-content-between mb-3">
+                        <div class="flex self-start" style="width: max-content; margin-left: auto;">
+                            <p:inputText id="searchKeyword" value="#{doctorTableBean.searchKeyword}"
+                                         placeholder="Search doctors..."/>
+                            <p:commandButton value="Search" action="#{doctorTableBean.searchByKeyword}"
+                                             update="doctorForm:doctorsTable"
+                                             process="searchKeyword,@this"
+                                             style="margin-left: 5px;"/>
+                            <p:commandButton value="Reset" action="#{doctorTableBean.resetFilters}"
+                                             update="doctorForm:doctorsTable,searchKeyword"
+                                             process="@this"
+                                             style="margin-left: 5px;"/>
+                            <p:commandButton value="Add New Doctor" action="#{navigationBean.navigateToDoctorForm}"
+                                             icon="pi pi-plus"
+                                             ajax="false"
+                                             style="margin-left: 5px;"/>
+                        </div>
+                    </div>
+
+                    <p:dataTable id="doctorsTable"
+                                 var="doctor"
+                                 value="#{doctorTableBean.filteredDoctors}"
+                                 editable="true"
+                                 editMode="row"
+                                 rowEditListener="#{doctorTableBean.onRowEdit}"
+                                 rowEditCancelListener="#{doctorTableBean.onRowCancel}"
+                                 paginator="true"
+                                 rows="10"
+                                 emptyMessage="No doctors found"
+                                 update="doctorForm:messages doctorForm:doctorsTable"
+                                 style="margin-bottom:20px">
+
+                        <p:column headerText="ID" style="width:10%">
+                            <h:outputText value="#{doctor.doctorID}"/>
+                        </p:column>
+
+                        <p:column headerText="First Name">
+                            <p:cellEditor>
+                                <f:facet name="output">
+                                    <h:outputText value="#{doctor.firstName}"/>
+                                </f:facet>
+                                <f:facet name="input">
+                                    <p:inputText value="#{doctor.firstName}" style="width:100%" required="true"/>
+                                </f:facet>
+                            </p:cellEditor>
+                        </p:column>
+
+                        <p:column headerText="Middle Name">
+                            <p:cellEditor>
+                                <f:facet name="output">
+                                    <h:outputText value="#{doctor.middleName}"/>
+                                </f:facet>
+                                <f:facet name="input">
+                                    <p:inputText value="#{doctor.middleName}" style="width:100%" required="true"/>
+                                </f:facet>
+                            </p:cellEditor>
+                        </p:column>
+
+                        <p:column headerText="Last Name">
+                            <p:cellEditor>
+                                <f:facet name="output">
+                                    <h:outputText value="#{doctor.lastName}"/>
+                                </f:facet>
+                                <f:facet name="input">
+                                    <p:inputText value="#{doctor.lastName}" style="width:100%" required="true"/>
+                                </f:facet>
+                            </p:cellEditor>
+                        </p:column>
+
+                        <p:column headerText="Date of Birth">
+                            <p:cellEditor>
+                                <f:facet name="output">
+                                    <h:outputText value="#{doctor.dateOfBirth}">
+                                        <f:convertDateTime pattern="yyyy-MM-dd" type="localDate"/>
+                                    </h:outputText>
+                                </f:facet>
+                                <f:facet name="input">
+                                    <p:calendar value="#{doctor.dateOfBirth}" style="width:100%" pattern="yyyy-MM-dd">
+                                        <f:convertDateTime pattern="yyyy-MM-dd" type="localDate"/>
+                                    </p:calendar>
+                                </f:facet>
+                            </p:cellEditor>
+                        </p:column>
+
+                        <p:column headerText="Email">
+                            <p:cellEditor>
+                                <f:facet name="output">
+                                    <h:outputText value="#{doctor.email}"/>
+                                </f:facet>
+                                <f:facet name="input">
+                                    <p:inputText value="#{doctor.email}" style="width:100%">
+                                        <f:validateRegex pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"/>
+                                    </p:inputText>
+                                </f:facet>
+                            </p:cellEditor>
+                        </p:column>
+
+                        <p:column headerText="Phone">
+                            <p:cellEditor>
+                                <f:facet name="output">
+                                    <h:outputText value="#{doctor.contactNumber}"/>
+                                </f:facet>
+                                <f:facet name="input">
+                                    <p:inputText value="#{doctor.contactNumber}" style="width:100%"/>
+                                </f:facet>
+                            </p:cellEditor>
+                        </p:column>
+
+                        <p:column style="width:6rem">
+                            <p:rowEditor editTitle="Edit" cancelTitle="Cancel" saveTitle="Save"/>
+                        </p:column>
+
+                        <p:column style="width:6rem">
+                            <p:commandButton icon="pi pi-trash" title="Delete"
+                                             action="#{doctorTableBean.delete(doctor.doctorID)}"
+                                             update="@form"
+                                             process="@this">
+
+                                <p:confirm header="Confirmation" message="Are you sure you want to delete this doctor?"
+                                           icon="pi pi-exclamation-triangle"/>
+                            </p:commandButton>
+                        </p:column>
+                    </p:dataTable>
+                </div>
+            </h:form>
+        </div>
+
+        <!-- Confirmation Dialog -->
+        <p:confirmDialog global="true" showEffect="fade" hideEffect="fade" responsive="true" width="350">
+            <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no ui-button-flat"/>
+            <p:commandButton value="Yes" type="button" styleClass="ui-confirmdialog-yes"/>
+        </p:confirmDialog>
+    </ui:define>
+</ui:composition>

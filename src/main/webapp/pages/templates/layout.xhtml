@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+<h:head>
+    <title>Hospital Management System</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet"/>
+    <style>
+        .blur-background {
+            filter: blur(4px);
+        }
+        .form-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .form-container {
+            background: white;
+            padding: 2rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 500px;
+        }
+    </style>
+</h:head>
+<h:body>
+    <!-- Growl for notifications -->
+    <p:growl id="globalMessages" autoUpdate="true" life="3000" globalOnly="false"/>
+
+    <!-- Top Navbar -->
+    <div class="bg-blue-600 text-white p-4 text-center">
+        <h1 class="text-2xl font-bold">HOSPITAL MANAGEMENT SYSTEM</h1>
+    </div>
+
+    <div class="flex">
+        <!-- Sidebar -->
+        <div class="w-80 bg-gray-100 h-screen p-4">
+            <h:form id="sidebarForm">
+                <div class="card">
+                    <p:panelMenu style="width:100%">
+<!--                        <p:submenu label="Add">-->
+<!--                            <p:menuitem value="Doctors" action="#{navigationBean.navigateToDoctorForm}"-->
+<!--                                        icon="pi pi-user-plus" update=":mainContentForm"/>-->
+<!--                            <p:menuitem value="Other Staff" action="#{navigationBean.navigateToStaffForm}"-->
+<!--                                        icon="pi pi-user-plus" update=":mainContentForm"/>-->
+<!--                        </p:submenu>-->
+                        <p:submenu label="Manage Staff">
+                            <p:menuitem value="DOCTORS" action="#{navigationBean.navigateToDoctorList}"
+                                        icon="pi pi-users" update=":mainContentForm"/>
+                            <p:menuitem value="OTHER_STAFF" action="#{navigationBean.navigateToStaffList}"
+                                        icon="pi pi-users" update=":mainContentForm"/>
+                        </p:submenu>
+                        <p:submenu label="Manage Patients">
+                            <p:menuitem value="Manage Patients" action="#{navigationBean.navigateToPatientList}"
+                                        icon="pi pi-users" update=":mainContentForm"/>
+                        </p:submenu>
+                        <p:submenu label="Manage Appointments">
+                            <p:menuitem value="Add" action="#{navigationBean.navigateToAppointmentForm}"
+                                        icon="pi pi-calendar-plus" update=":mainContentForm"/>
+                            <p:menuitem value="Update" action="#{navigationBean.navigateToAppointmentList}"
+                                        icon="pi pi-calendar" update=":mainContentForm"/>
+                        </p:submenu>
+                        <p:submenu label="Manage Medical Records">
+                            <p:menuitem value="Add" action="#{navigationBean.navigateToMedicalRecordForm}"
+                                        icon="pi pi-file-plus" update=":mainContentForm"/>
+                            <p:menuitem value="List" action="#{navigationBean.navigateToMedicalRecordList}"
+                                        icon="pi pi-list" update=":mainContentForm"/>
+                        </p:submenu>
+                    </p:panelMenu>
+
+                    <div class="mt-6 flex justify-center">
+                        <p:commandButton value="Logout"
+                                         action="#{navigationBean.logout}"
+                                         icon="pi pi-sign-out"
+                                         styleClass="ui-button-danger"
+                                         ajax="false"
+                                         style="padding: 0.75rem 1.5rem; font-weight: bold;" />
+                    </div>
+
+
+
+                </div>
+            </h:form>
+        </div>
+
+        <!-- Main Content Area -->
+        <div class="flex-1">
+            <h:form id="mainContentForm">
+                <div class="p-4">
+                    <ui:insert name="content">
+                        <!-- Placeholder for page-specific content -->
+                    </ui:insert>
+                </div>
+            </h:form>
+        </div>
+    </div>
+
+    <!-- Global Confirm Dialog -->
+    <h:form id="confirmDialogForm">
+        <p:confirmDialog global="true" showEffect="fade">
+            <p:commandButton value="Yes" type="button" styleClass="ui-confirmdialog-yes" icon="pi pi-check"/>
+            <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no ui-button-flat" icon="pi pi-times"/>
+        </p:confirmDialog>
+    </h:form>
+</h:body>
+</html>
