@@ -11,13 +11,6 @@ public class User implements SoftDeletable {
     @Column(name="user_id")
     Long userId;
 
-    @Column(name  = "email")
-    String email;
-
-    @Enumerated(EnumType.STRING)
-    @Column(name="role")
-    Role role;
-
     @Column(name="password", nullable=false)
     String password;
 
@@ -29,9 +22,7 @@ public class User implements SoftDeletable {
 
     private boolean deleted = false;
 
-    public User(String email, Role role , String password){
-        this.email = email;
-        this.role = role;
+    public User(String password){
         this.password = password;
     }
 
@@ -49,21 +40,18 @@ public class User implements SoftDeletable {
         return this.userId;
     }
 
-    public void setRole(Role role){
-        this.role = role;
-    }
-
-    public Role getRole(){
-        return this.role;
-    }
 
 
-    public void setEmail(String email) {
-        this.email = email;
+    public Role getUserRole() {
+        if (doctor != null) return Role.DOCTOR;
+        if (staff != null) return staff.getRole();
+        return null;
     }
 
     public String getEmail(){
-        return this.email;
+        if (doctor != null) return doctor.getEmail();
+        if (staff != null) return staff.getEmail();
+        return null;
     }
 
     public void setDoctor(Doctor doctor){

@@ -5,7 +5,7 @@ import org.example.models.base.SoftDeletable;
 
 @Entity
 @Table(name = "staff")
-public class Staff extends Personel implements SoftDeletable {
+public class Staff extends Base implements SoftDeletable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "staff_id")
@@ -18,6 +18,8 @@ public class Staff extends Personel implements SoftDeletable {
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name= "user_id")
     private User userAccount;
+
+
 
 //    gettters and setters
 
@@ -55,6 +57,8 @@ public class Staff extends Personel implements SoftDeletable {
     public User getUser(){
         return this.userAccount;
     }
+
+
 
     @Override
     public String toString() {
