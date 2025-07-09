@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui">
+<ui:composition template="/pages/templates/layout.xhtml">
+    <ui:define name="content">
+        <h:form id="dashboardForm">
+            <div class="flex flex-col items-center justify-center h-full p-6">
+                <h:panelGroup rendered="#{userBean.currentUser != null}">
+                    <h1 class="text-3xl font-bold text-blue-600 mb-4">
+                        Hospital Management System welcomes you, #{userBean.currentUser.getUserRole()}!
+                    </h1>
+                    <p class="text-lg text-gray-600">
+                        You are logged in as <h:outputText value="#{userBean.currentUser.email}"/>.
+                    </p>
+                </h:panelGroup>
+                <h:panelGroup rendered="#{userBean.currentUser == null}">
+                    <h1 class="text-3xl font-bold text-blue-600 mb-4">
+                        Welcome to Hospital Management System
+                    </h1>
+                    <p class="text-lg text-gray-600">
+                        Please <h:commandLink value="log in" action="#{userBean.logout}"/> to access your dashboard.
+                    </p>
+                </h:panelGroup>
+            </div>
+        </h:form>
+    </ui:define>
+</ui:composition>
+</html>
