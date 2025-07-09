@@ -35,7 +35,7 @@ public abstract class BaseDAO<T extends SoftDeletable> {
     public List<T> getByName(String name) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             Query<T> query = session.createQuery(
-                    "FROM " + entityClass.getSimpleName() + " WHERE firstName LIKE :name OR lastName LIKE :name AND deleted = false",
+                    "FROM " + entityClass.getSimpleName() + " WHERE (firstName LIKE :name OR lastName LIKE :name) AND deleted = false",
                     entityClass
             );
             query.setParameter("name", "%" + name + "%");
@@ -59,13 +59,15 @@ public abstract class BaseDAO<T extends SoftDeletable> {
         }
     }
 
-    public boolean saveToDB(Optional<T> entity) {
+    public boolean saveToDB(T entity) {
         Transaction transaction = null;
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             transaction = session.beginTransaction();
             session.saveOrUpdate(entity);
             transaction.commit();
+            System.out.println("Saving " + entityClass.getSimpleName() + ": " + entity.toString());
             return true;
+
         } catch (Exception e) {
             if (transaction != null) {
                 transaction.rollback();
@@ -74,6 +76,7 @@ public abstract class BaseDAO<T extends SoftDeletable> {
             return false;
         }
     }
+
 
     public void deleteByID(Long id) {
         Transaction transaction = null;

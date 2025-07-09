@@ -3,6 +3,7 @@ import jakarta.enterprise.inject.Model;
 import org.example.enums.Speciality;
 import org.example.models.entities.Doctor;
 
+import org.example.models.entities.Doctor;
 import org.example.utilities.HibernateUtil;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
@@ -44,6 +45,33 @@ public class DoctorDAO extends BaseDAO<Doctor>  implements Serializable {
         } catch (Exception e) {
             System.out.println("Error fetching doctors by speciality: " + e.getMessage());
             return List.of();
+        }
+    }
+
+    public void updateDoctor(Doctor updatedDoctor) {
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            Transaction tx = session.beginTransaction();
+            Doctor existingDoctor = session.get(Doctor.class, updatedDoctor.getDoctorID());
+            if (existingDoctor != null) {
+                // Update all fields at once
+                existingDoctor.setFirstName(updatedDoctor.getFirstName());
+                existingDoctor.setMiddleName(updatedDoctor.getMiddleName());
+                existingDoctor.setLastName(updatedDoctor.getLastName());
+                existingDoctor.setEmail(updatedDoctor.getEmail());
+                existingDoctor.setContactNumber(updatedDoctor.getContactNumber());
+                existingDoctor.setDateOfBirth(updatedDoctor.getDateOfBirth());
+                existingDoctor.getUser().setPassword(updatedDoctor.getUser().getPassword());
+
+                session.merge(updatedDoctor);
+
+                tx.commit();
+            } else {
+                tx.rollback();
+                throw new RuntimeException("Doctor not found with ID: " + updatedDoctor.getDoctorID());
+            }
+        } catch (Exception e) {
+            System.out.println("Error updating patient: " + e.getMessage());
+            throw new RuntimeException("Failed to update patient", e);
         }
     }
 
