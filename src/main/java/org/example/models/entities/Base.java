@@ -3,7 +3,7 @@ import jakarta.persistence.*;
 import java.time.LocalDate;
 
 @MappedSuperclass
-public class Personel {
+public class Base {
 
     @Column(name="first_name")
     private String firstName;
