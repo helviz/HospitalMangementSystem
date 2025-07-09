@@ -1,5 +1,6 @@
 package org.example.models.entities;
 import jakarta.persistence.*;
+import org.example.enums.Role;
 import org.example.enums.Speciality;
 import org.example.models.base.SoftDeletable;
 
@@ -8,7 +9,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "doctors")
-public class Doctor extends Personel implements SoftDeletable {
+public class Doctor extends Base implements SoftDeletable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "doctor_id")
@@ -27,6 +28,8 @@ public class Doctor extends Personel implements SoftDeletable {
     @OneToMany(mappedBy = "doctor", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<MedicalRecord> medicalRecording = new ArrayList<>();
     private boolean deleted = false;
+
+    private Role role = Role.DOCTOR;
 
 
 
@@ -75,6 +78,10 @@ public class Doctor extends Personel implements SoftDeletable {
     public User getUser(){
         return this.userAccount;
     }
+
+    public void setRole(Role role){this.role = role;}
+
+    public Role getRole(){ return this.role; }
 
 
     @Override

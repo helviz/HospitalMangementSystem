@@ -18,6 +18,8 @@ public class PatientDAO extends BaseDAO<Patient> implements Serializable {
     public PatientDAO(){
         super(Patient.class);
     }
+
+    
     private void updatePatientField(Long id, Consumer<Patient> updater) {
         try (Session session = HibernateUtil.getSessionFactory().getCurrentSession()) {
             Transaction tx = session.beginTransaction();
@@ -42,6 +44,33 @@ public class PatientDAO extends BaseDAO<Patient> implements Serializable {
         } catch (Exception e) {
             System.out.println("Error searching patients: " + e.getMessage());
             return List.of();
+        }
+    }
+
+
+    public void updatePatient(Patient updatedPatient) {
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            Transaction tx = session.beginTransaction();
+            Patient existingPatient = session.get(Patient.class, updatedPatient.getPatientID());
+            if (existingPatient != null) {
+                // Update all fields at once
+                existingPatient.setFirstName(updatedPatient.getFirstName());
+                existingPatient.setMiddleName(updatedPatient.getMiddleName());
+                existingPatient.setLastName(updatedPatient.getLastName());
+                existingPatient.setEmail(updatedPatient.getEmail());
+                existingPatient.setContactNumber(updatedPatient.getContactNumber());
+                existingPatient.setDateOfBirth(updatedPatient.getDateOfBirth());
+
+                session.merge(updatedPatient);
+
+                tx.commit();
+            } else {
+                tx.rollback();
+                throw new RuntimeException("Patient not found with ID: " + updatedPatient.getPatientID());
+            }
+        } catch (Exception e) {
+            System.out.println("Error updating patient: " + e.getMessage());
+            throw new RuntimeException("Failed to update patient", e);
         }
     }
 

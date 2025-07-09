@@ -6,7 +6,7 @@ import java.util.List;
 
 @Entity
 @Table(name="patients")
-public class Patient extends Personel implements SoftDeletable {
+public class Patient extends Base implements SoftDeletable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="patient_id")

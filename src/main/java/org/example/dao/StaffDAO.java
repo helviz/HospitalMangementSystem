@@ -3,6 +3,7 @@ package org.example.dao;
 import jakarta.enterprise.inject.Model;
 import org.example.enums.Role;
 import org.example.models.entities.Staff;
+import org.example.models.entities.Staff;
 import org.example.utilities.HibernateUtil;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
@@ -43,6 +44,33 @@ public class StaffDAO extends BaseDAO<Staff> implements Serializable {
         } catch (Exception e) {
             System.out.println("Error fetching staff by role: " + e.getMessage());
             return List.of();
+        }
+    }
+
+    public void updateStaff(Staff updatedStaff) {
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            Transaction tx = session.beginTransaction();
+            Staff existingStaff = session.get(Staff.class, updatedStaff.getStaffID());
+            if (existingStaff != null) {
+                // Update all fields at once
+                existingStaff.setFirstName(updatedStaff.getFirstName());
+                existingStaff.setMiddleName(updatedStaff.getMiddleName());
+                existingStaff.setLastName(updatedStaff.getLastName());
+                existingStaff.setEmail(updatedStaff.getEmail());
+                existingStaff.setContactNumber(updatedStaff.getContactNumber());
+                existingStaff.setDateOfBirth(updatedStaff.getDateOfBirth());
+                existingStaff.getUser().setPassword(updatedStaff.getUser().getPassword());
+
+                session.merge(updatedStaff);
+
+                tx.commit();
+            } else {
+                tx.rollback();
+                throw new RuntimeException("Staff not found with ID: " + updatedStaff.getStaffID());
+            }
+        } catch (Exception e) {
+            System.out.println("Error updating patient: " + e.getMessage());
+            throw new RuntimeException("Failed to update patient", e);
         }
     }
 
