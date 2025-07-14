@@ -49,5 +49,5 @@ A comprehensive web-based Hospital Management System (HMS) built using Java (JSF
 
 1. **Clone the Repository**
    ```bash
-   git clone https://github.com/yourusername/hospital-management-system.git
+   git clone https://github.com/helviz/HospitalMangementSystem.git
    cd hospital-management-system
