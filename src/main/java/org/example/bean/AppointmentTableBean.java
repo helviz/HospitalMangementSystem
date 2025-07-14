@@ -1,4 +1,4 @@
-package org.example.managedbeans;
+package org.example.bean;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.faces.view.ViewScoped;
@@ -10,7 +10,8 @@ import org.example.services.AppointmentService;
 
 
 import java.io.Serializable;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
+
 import java.util.List;
 
 @Named("appointmentTableBean")
@@ -21,8 +22,8 @@ public class AppointmentTableBean implements Serializable {
     private Appointment selectedAppointment;
 
     private Long doctorId;
-    private LocalDate startDate;
-    private LocalDate endDate;
+    private LocalDateTime startDate;
+    private LocalDateTime endDate;
 
     @Inject
     private AppointmentService appointmentService;
@@ -84,19 +85,19 @@ public class AppointmentTableBean implements Serializable {
         this.doctorId = doctorId;
     }
 
-    public LocalDate getStartDate() {
+    public LocalDateTime getStartDate() {
         return startDate;
     }
 
-    public void setStartDate(LocalDate startDate) {
+    public void setStartDate(LocalDateTime startDate) {
         this.startDate = startDate;
     }
 
-    public LocalDate getEndDate() {
+    public LocalDateTime getEndDate() {
         return endDate;
     }
 
-    public void setEndDate(LocalDate endDate) {
+    public void setEndDate(LocalDateTime endDate) {
         this.endDate = endDate;
     }
 

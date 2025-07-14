@@ -1,4 +1,4 @@
-package org.example.managedbeans;
+package org.example.bean;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.faces.application.FacesMessage;
@@ -9,7 +9,6 @@ import jakarta.inject.Named;
 import org.example.enums.Speciality;
 import org.example.models.entities.Doctor;
 
-import org.example.models.entities.Doctor;
 import org.example.services.DoctorService;
 
 

@@ -1,22 +1,27 @@
-package org.example.managedbeans;
+package org.example.bean;
 
 import jakarta.enterprise.context.RequestScoped;
+import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
 import org.example.models.entities.User;
-import org.example.services.Impl.UserServiceImpl;
 import org.example.services.ServiceException;
 import org.example.services.UserService;
 
+import java.io.Serializable;
+
 
 @Named("UserManagedBean")
-@RequestScoped
-public class UserBean {
+@SessionScoped
+public class UserBean implements Serializable {
 
     @Inject
     private UserService userService;
+
+    @Inject
+    private NavigationBean navigationBean;
 
     private String email;
     private String password;
@@ -79,6 +84,11 @@ public class UserBean {
             FacesContext.getCurrentInstance().addMessage(null,
                     new FacesMessage(FacesMessage.SEVERITY_ERROR, e.getMessage(), null));
         }
+    }
+
+
+    public String logout(){
+        return navigationBean.logout();
     }
 
     // =======================

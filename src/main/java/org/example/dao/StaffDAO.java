@@ -3,7 +3,6 @@ package org.example.dao;
 import jakarta.enterprise.inject.Model;
 import org.example.enums.Role;
 import org.example.models.entities.Staff;
-import org.example.models.entities.Staff;
 import org.example.utilities.HibernateUtil;
 import org.hibernate.Session;
 import org.hibernate.Transaction;

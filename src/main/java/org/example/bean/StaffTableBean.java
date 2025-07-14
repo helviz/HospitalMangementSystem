@@ -1,15 +1,12 @@
-package org.example.managedbeans;
+package org.example.bean;
 
 import jakarta.annotation.PostConstruct;
-import jakarta.el.MethodExpression;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
 import jakarta.faces.view.ViewScoped;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
 import org.example.enums.Role;
-import org.example.models.entities.*;
-import org.example.models.entities.Staff;
 import org.example.models.entities.Staff;
 import org.example.services.StaffService;
 import org.primefaces.event.RowEditEvent;
@@ -17,6 +14,7 @@ import org.primefaces.event.RowEditEvent;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -32,19 +30,20 @@ public class StaffTableBean implements Serializable {
     private Staff staff;
     private List<Staff> staffs;
 
+    private List <Staff> receptionists;
+    private List<Staff> nurses;
+
     @Inject
     private StaffService staffService;
 
     @PostConstruct
     public void init() {
-        staffList = staffService.getAllStaff();
-        refreshStaffs();
+        refreshStaff();
+
     }
 
 
-    public void refreshStaff() {
-        staffList = staffService.getAllStaff();
-    }
+
 
     public void filterByRole() {
         if (selectedRole != null) {
@@ -138,7 +137,7 @@ public class StaffTableBean implements Serializable {
                     new FacesMessage("Staff Updated", "Staff " + staff.getFirstName() + " " + staff.getLastName() + " updated successfully"));
 
             // Refresh the list
-            refreshStaffs();
+            refreshStaff();
         } catch (Exception e) {
             FacesContext.getCurrentInstance().addMessage(null,
                     new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", "Failed to update staff: " + e.getMessage()));
@@ -162,10 +161,11 @@ public class StaffTableBean implements Serializable {
 
     }
 
-    public void refreshStaffs() {
+    public void refreshStaff() {
         staffs = staffService.getAllStaff();
         sortStaffsLatestFirst();
-        filteredStaffs = staffs;
+        filterStaffs(staffs);
+
     }
 
     public void delete(Long staffId) {
@@ -173,11 +173,23 @@ public class StaffTableBean implements Serializable {
             staffService.deleteStaffById(staffId);
             FacesContext.getCurrentInstance().addMessage(null,
                     new FacesMessage("Patient Deleted", "Patient deleted successfully"));
-            refreshStaffs();
+            refreshStaff();
         } catch (Exception e) {
             FacesContext.getCurrentInstance().addMessage(null,
                     new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", "Failed to delete staff: " + e.getMessage()));
         }
+    }
+
+    public void filterStaffs(List<Staff> staffList) {
+        nurses = staffList.stream()
+                .filter(p -> p.getRole() == Role.NURSE)
+                .sorted(Comparator.comparing(Staff::getStaffID).reversed()) // Latest first
+                .toList();
+
+        receptionists = staffList.stream()
+                .filter(p -> p.getRole() == Role.RECEPTION)
+                .sorted(Comparator.comparing(Staff::getStaffID).reversed()) // Latest first
+                .toList();
     }
 
 
@@ -228,6 +240,22 @@ public class StaffTableBean implements Serializable {
         this.filteredStaffs = filteredStaffs;
     }
 
+    public void setNurses(List<Staff> nurses){
+        this.nurses = nurses;
+    }
 
-    
+    public List<Staff> getNurses(){
+        return this.nurses;
+    }
+
+    public void setReceptionists(List<Staff> receptionists){
+        this.receptionists = receptionists;
+    }
+
+    public List<Staff> getReceptionists(){
+        return receptionists;
+    }
+
+
+
 }

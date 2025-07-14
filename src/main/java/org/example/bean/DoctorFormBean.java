@@ -1,4 +1,4 @@
-package org.example.managedbeans;
+package org.example.bean;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.faces.application.FacesMessage;
@@ -8,13 +8,14 @@ import jakarta.inject.Inject;
 import jakarta.inject.Named;
 import org.example.enums.Speciality;
 import org.example.models.entities.Doctor;
-import org.example.models.entities.Doctor;
 import org.example.models.entities.User;
 import org.example.services.DoctorService;
 import org.example.services.ServiceException;
+import org.example.services.UserService;
 
 
 import java.io.Serializable;
+import java.util.Optional;
 
 @Named("doctorFormBean")
 @ViewScoped
@@ -30,12 +31,34 @@ public class DoctorFormBean implements Serializable {
     @Inject
     private DoctorService doctorService;
 
+    @Inject
+    private UserService userService;
+
+    @Inject
+    private NavigationBean navigationBean;
+
+
+
+
+
     @PostConstruct
     public void init() {
-        System.out.println("DoctorFormBean initialized");
-        initializeDoctor();
-        updateFormTitles();
+        Object flashDoctor = FacesContext.getCurrentInstance()
+                .getExternalContext().getFlash().get("doctorToEdit");
+
+        if (flashDoctor instanceof Doctor doctorToEdit) {
+            this.doctor = doctorToEdit;
+            this.editMode = true;
+            this.formTitle = "Edit Doctor";
+            this.submitButtonText = "Update Doctor";
+        } else {
+            this.doctor = new Doctor();
+            this.editMode = false;
+            this.formTitle = "Add New Doctor";
+            this.submitButtonText = "Save Doctor";
+        }
     }
+
 
     private void initializeDoctor() {
         this.doctor = new Doctor();
@@ -54,40 +77,66 @@ public class DoctorFormBean implements Serializable {
     public String saveDoctor() {
         System.out.println("Save method called");
 
+        if (doctor == null) {
+            System.out.println("ERROR: Doctor object is null!");
+            FacesContext.getCurrentInstance().addMessage(null,
+                    new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", "Doctor data is missing."));
+            return navigationBean.navigateToDoctorForm(); // fallback
+        }
+
         try {
             ensureUserExists();
 
-            // Always set the user password from the form
-            doctor.getUser().setPassword(userPassword);
+            String email = doctor.getEmail().trim().toLowerCase();
 
-            // Set the bidirectional relationship correctly
+            // Check if email is already used
+            Optional<User> existingUserOpt = userService.findByEmail(email);
+
+            if (existingUserOpt.isPresent()) {
+                User existingUser = existingUserOpt.get();
+                Long currentUserId = doctor.getUser().getUserId();
+
+                if (currentUserId == null || !existingUser.getUserId().equals(currentUserId)) {
+                    FacesContext.getCurrentInstance().addMessage(null,
+                            new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", "Email address is already in use."));
+                    return null;
+                }
+            }
+
+            // Set password if new or userPassword provided
+            if (doctor.getDoctorID() == null || (userPassword != null && !userPassword.isEmpty())) {
+                doctor.getUser().setPassword(userPassword);
+            }
+
+            // Set bidirectional relationship
             doctor.getUser().setDoctor(doctor);
             doctor.setUser(doctor.getUser());
 
             boolean saved = doctorService.saveDoctor(doctor);
             System.out.println("Save result: " + saved);
-            System.out.println("Doctor details: " + doctor.toString());
+            System.out.println("Doctor details: " + doctor);
 
             if (saved) {
                 FacesContext.getCurrentInstance().addMessage(null,
                         new FacesMessage(FacesMessage.SEVERITY_INFO, "Success", "Doctor saved successfully."));
-
-                // Always reset form after successful save
                 resetForm();
-
+                return navigationBean.navigateToStaffList();
             } else {
                 FacesContext.getCurrentInstance().addMessage(null,
                         new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", "Failed to save doctor."));
+                return null;
             }
 
         } catch (ServiceException e) {
             e.printStackTrace();
             FacesContext.getCurrentInstance().addMessage(null,
                     new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", "Error saving doctor: " + e.getMessage()));
+            return null;
         }
-
-        return "/pages/doctors/list.xhtml?faces-redirect=true";
     }
+
+
+
 
 
     public void loadDoctor(Long doctorId) {
@@ -124,56 +173,6 @@ public class DoctorFormBean implements Serializable {
         }
     }
 
-//    public String saveDoctor() {
-//        System.out.println("saveDoctor method called");
-//
-//        try {
-//            if (doctor != null) {
-//                // Debug: Print doctor details
-//                System.out.println("Doctor details: " + doctor.toString());
-//
-//                // Check if doctorService is properly injected
-//                if (doctorService == null) {
-//                    System.out.println("ERROR: DoctorService is null!");
-//                    FacesContext.getCurrentInstance().addMessage(null,
-//                            new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error",
-//                                    "Service injection failed. Please check your configuration."));
-//                    return null;
-//                }
-//
-//                boolean result = doctorService.saveDoctor(doctor);
-//                System.out.println("Save result: " + result);
-//
-//                if (result) {
-//                    FacesContext.getCurrentInstance().addMessage(null,
-//                            new FacesMessage(FacesMessage.SEVERITY_INFO, "Success",
-//                                    "Doctor has been successfully saved!"));
-//                    resetForm();
-//                } else {
-//                    FacesContext.getCurrentInstance().addMessage(null,
-//                            new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error",
-//                                    "Failed to save doctor to database."));
-//                }
-//            } else {
-//                System.out.println("ERROR: Doctor object is null!");
-//                FacesContext.getCurrentInstance().addMessage(null,
-//                        new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error",
-//                                "Doctor data is missing."));
-//            }
-//        } catch (Exception e) {
-//            System.out.println("Exception in saveDoctor method: " + e.getMessage());
-//            e.printStackTrace();
-//
-//            FacesContext.getCurrentInstance().addMessage(null,
-//                    new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error",
-//                            "Failed to save doctor: " + e.getMessage()));
-//        }
-//
-//        return "/pages/doctors/list.xhtml?faces-redirect=true";
-//    }
-
-
-
 
     public String cancelForm() {
         doctor = new Doctor();
@@ -183,7 +182,7 @@ public class DoctorFormBean implements Serializable {
                 new FacesMessage(FacesMessage.SEVERITY_INFO, "Info",
                         "Form has been cancelled."));
 
-        return "/pages/doctors/list.xhtml?faces-redirect=true";
+        return navigationBean.navigateToStaffList();
     }
 
     // === Getters and Setters ===
