@@ -5,110 +5,168 @@
       xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
 <h:head>
     <title>Hospital Management System</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet"/>
     <style>
-        .blur-background {
-            filter: blur(4px);
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: #f8f9fa;
         }
-        .form-overlay {
-            position: fixed;
+
+        .top-navbar {
+            background-color: #007bff;
+            color: white;
+            padding: 1rem;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            position: sticky;
             top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.5);
-            z-index: 1000;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            z-index: 1050;
         }
-        .form-container {
-            background: white;
-            padding: 2rem;
-            border-radius: 0.5rem;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+
+        .top-navbar-title {
+            font-size: 1.75rem;
+            font-weight: bold;
+        }
+
+        .page-container {
+            display: flex;
+            height: calc(100% - 62px); /* full height minus navbar */
+            width: 100vw;
+            overflow: hidden; /* prevent horizontal scroll */
+        }
+
+        .sidebar {
+            width: 250px;
+            min-width: 250px;
+            background-color: #ffffff;
+            border-right: 1px solid #dee2e6;
+            padding: 1rem;
+            height: 100%;
+            position: sticky;
+            top: 62px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            align-items: stretch; /* stretch items to fill width */
+            box-sizing: border-box;
+            transition: width 0.3s ease; /* smooth transition for collapsing */
+        }
+
+        /* Adjust buttons for a full sidebar */
+        .sidebar-form .ui-button {
             width: 100%;
-            max-width: 500px;
+            margin-bottom: 1rem;
+            justify-content: flex-start; /* align icon and text to the left */
+            padding: 0.75rem 1rem;
+            font-size: 1rem;
+        }
+
+        /* Ensure button text is visible */
+        .sidebar-form .ui-button .ui-button-text {
+            display: inline-block;
+        }
+
+        /* Restore margin for the icon */
+        .sidebar-form .ui-button .ui-button-icon-left {
+            margin-right: 0.5rem;
+            font-size: 1.25rem;
+        }
+
+        .logout-section {
+            margin-top: auto; /* stick to bottom */
+            width: 100%;
+        }
+
+        .main-content {
+            flex-grow: 1;
+            max-height: 100%;
+            padding: 2rem;
+            overflow-y: auto;
+            background-color: #ffffff;
+            border-radius: 8px 0 0 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            box-sizing: border-box;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .button-group .ui-button {
+            min-width: 150px;
         }
     </style>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
 </h:head>
 <h:body>
-    <!-- Growl for notifications -->
-    <p:growl id="globalMessages" autoUpdate="true" life="3000" globalOnly="false"/>
+    <p:growl id="globalMessages" autoUpdate="true" life="3000" globalOnly="false" />
 
-    <!-- Top Navbar -->
-    <div class="bg-blue-600 text-white p-4 text-center">
-        <h1 class="text-2xl font-bold">HOSPITAL MANAGEMENT SYSTEM</h1>
+    <div class="top-navbar">
+        <div class="top-navbar-title">HOSPITAL MANAGEMENT SYSTEM</div>
     </div>
 
-    <div class="flex">
-        <!-- Sidebar -->
-        <div class="w-80 bg-gray-100 h-screen p-4">
-            <h:form id="sidebarForm">
-                <div class="card">
-                    <p:panelMenu style="width:100%">
-<!--                        <p:submenu label="Add">-->
-<!--                            <p:menuitem value="Doctors" action="#{navigationBean.navigateToDoctorForm}"-->
-<!--                                        icon="pi pi-user-plus" update=":mainContentForm"/>-->
-<!--                            <p:menuitem value="Other Staff" action="#{navigationBean.navigateToStaffForm}"-->
-<!--                                        icon="pi pi-user-plus" update=":mainContentForm"/>-->
-<!--                        </p:submenu>-->
-                        <p:submenu label="Manage Staff">
-                            <p:menuitem value="DOCTORS" action="#{navigationBean.navigateToDoctorList}"
-                                        icon="pi pi-users" update=":mainContentForm"/>
-                            <p:menuitem value="OTHER_STAFF" action="#{navigationBean.navigateToStaffList}"
-                                        icon="pi pi-users" update=":mainContentForm"/>
-                        </p:submenu>
-                        <p:submenu label="Manage Patients">
-                            <p:menuitem value="Manage Patients" action="#{navigationBean.navigateToPatientList}"
-                                        icon="pi pi-users" update=":mainContentForm"/>
-                        </p:submenu>
-                        <p:submenu label="Manage Appointments">
-                            <p:menuitem value="Add" action="#{navigationBean.navigateToAppointmentForm}"
-                                        icon="pi pi-calendar-plus" update=":mainContentForm"/>
-                            <p:menuitem value="Update" action="#{navigationBean.navigateToAppointmentList}"
-                                        icon="pi pi-calendar" update=":mainContentForm"/>
-                        </p:submenu>
-                        <p:submenu label="Manage Medical Records">
-                            <p:menuitem value="Add" action="#{navigationBean.navigateToMedicalRecordForm}"
-                                        icon="pi pi-file-plus" update=":mainContentForm"/>
-                            <p:menuitem value="List" action="#{navigationBean.navigateToMedicalRecordList}"
-                                        icon="pi pi-list" update=":mainContentForm"/>
-                        </p:submenu>
-                    </p:panelMenu>
+    <div class="page-container">
+        <div class="sidebar">
+            <h:form id="sidebarForm" styleClass="sidebar-form">
 
-                    <div class="mt-6 flex justify-center">
-                        <p:commandButton value="Logout"
-                                         action="#{navigationBean.logout}"
-                                         icon="pi pi-sign-out"
-                                         styleClass="ui-button-danger"
-                                         ajax="false"
-                                         style="padding: 0.75rem 1.5rem; font-weight: bold;" />
-                    </div>
+                <p:commandButton value="Dashboard"
+                                 action="#{navigationBean.navigateToDashboard}"
+                                 icon="pi pi-home"
+                                 title="Dashboard"
+                                 update=":mainContentForm" />
 
+                <p:commandButton value="Staff"
+                                 action="#{navigationBean.navigateToStaffList}"
+                                 icon="pi pi-users"
+                                 title="Staff"
+                                 update=":mainContentForm" />
 
+                <p:commandButton value="Patients"
+                                 action="#{navigationBean.navigateToPatientList}"
+                                 icon="pi pi-user"
+                                 title="Patients"
+                                 update=":mainContentForm" />
 
+                <p:commandButton value="Appointments"
+                                 action="#{navigationBean.navigateToAppointmentForm}"
+                                 icon="pi pi-calendar-plus"
+                                 title="Appointments"
+                                 update=":mainContentForm" />
+
+                <p:commandButton value="Medical Records"
+                                 action="#{navigationBean.navigateToMedicalRecordList}"
+                                 icon="pi pi-file"
+                                 title="Medical Records"
+                                 update=":mainContentForm" />
+
+                <div class="logout-section">
+                    <p:commandButton value="Logout"
+                                     action="#{navigationBean.logout}"
+                                     icon="pi pi-sign-out"
+                                     styleClass="ui-button-danger"
+                                     title="Logout"
+                                     ajax="false" />
                 </div>
             </h:form>
         </div>
 
-        <!-- Main Content Area -->
-        <div class="flex-1">
-            <h:form id="mainContentForm">
-                <div class="p-4">
-                    <ui:insert name="content">
-                        <!-- Placeholder for page-specific content -->
-                    </ui:insert>
-                </div>
+        <div class="main-content">
+            <h:form id="mainContentForm" styleClass="main-content-form">
+                <ui:insert name="content">
+                    <!-- Page-specific content will be dynamically inserted here -->
+                </ui:insert>
             </h:form>
         </div>
     </div>
 
-    <!-- Global Confirm Dialog -->
     <h:form id="confirmDialogForm">
         <p:confirmDialog global="true" showEffect="fade">
-            <p:commandButton value="Yes" type="button" styleClass="ui-confirmdialog-yes" icon="pi pi-check"/>
-            <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no ui-button-flat" icon="pi pi-times"/>
+            <p:commandButton value="Yes" type="button" styleClass="ui-confirmdialog-yes" icon="pi pi-check" />
+            <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no ui-button-flat" icon="pi pi-times" />
         </p:confirmDialog>
     </h:form>
 </h:body>

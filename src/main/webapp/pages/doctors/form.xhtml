@@ -95,7 +95,7 @@
                                       monthNavigator="true"
                                       yearNavigator="true"
                                       mindate="#{calendarViewBean.minDate}"
-                                      maxdate="#{calendarViewBean.maxDate}"
+                                      maxdate="#{calendarViewBean.workMaxDate}"
                                       placeholder="Select date of birth"/>
                         <p:message for="dateOfBirth" styleClass="text-red-500 text-sm"/>
                     </div>
@@ -136,11 +136,12 @@
                                      value="#{doctorFormBean.doctor.contactNumber}"
                                      required="true"
                                      requiredMessage="Contact number is required"
-                                     validatorMessage="Please enter a valid contact number"
+                                     validatorMessage="Please enter a valid contact number 7******** "
                                      maxlength="15"
                                      styleClass="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                                      placeholder="Enter number 7********">
-                            <f:validateRegex pattern="^[\+]?[\d\s\-\(\)]{7,15}$"/>
+                            <f:validateRegex pattern="^7\d{8}$" />
+
                         </p:inputText>
                         <p:message for="contactNumber" styleClass="text-red-500 text-sm"/>
                     </div>
@@ -186,7 +187,9 @@
                         </label>
                         <p:password id="password"
                                     value="#{doctorFormBean.userPassword}"
-                                    required="true"
+                                    required="#{!doctorFormBean.editMode}"
+                                    toggleMask="true"
+                                    feedback="true"
                                     requiredMessage="Password is required"
                                     validatorMessage="Password must be at least 6 characters long"
                                     styleClass="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
@@ -220,8 +223,10 @@
                                      value="Reset Form"
                                      action="#{doctorFormBean.resetForm}"
                                      update="doctorForm"
-                                     process="@this"
                                      ajax="false"
+                                     immediate="true"
+                                     process="@this"
+                                     partialSubmit="true"
                                      styleClass="px-6 py-3 bg-gray-600 text-white font-medium rounded-md shadow-sm hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors duration-200"
                                      icon="pi pi-refresh">
                         <p:confirm header="Confirmation"
@@ -237,6 +242,9 @@
                                      value="Cancel"
                                      action="#{doctorFormBean.cancelForm}"
                                      ajax="false"
+                                     immediate="true"
+                                     process="@this"
+                                     partialSubmit="true"
                                      styleClass="px-6 py-3 bg-white text-gray-700 font-medium rounded-md border border-gray-300 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors duration-200"
                                      icon="pi pi-times">
                         <p:confirm header="Confirmation"
@@ -264,6 +272,18 @@
         </div>
     </ui:define>
 </ui:composition>
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

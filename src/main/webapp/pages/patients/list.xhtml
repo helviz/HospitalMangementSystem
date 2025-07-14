@@ -39,10 +39,7 @@
                     <p:dataTable id="patientsTable"
                                  var="patient"
                                  value="#{patientTableBean.filteredPatients}"
-                                 editable="true"
-                                 editMode="row"
-                                 rowEditListener="#{patientTableBean.onRowEdit}"
-                                 rowEditCancelListener="#{patientTableBean.onRowCancel}"
+                                 rowKey="#{patient.patientID}"
                                  paginator="true"
                                  rows="10"
                                  emptyMessage="No patients found"
@@ -54,92 +51,60 @@
                         </p:column>
 
                         <p:column headerText="First Name">
-                            <p:cellEditor>
-                                <f:facet name="output">
-                                    <h:outputText value="#{patient.firstName}"/>
-                                </f:facet>
-                                <f:facet name="input">
-                                    <p:inputText value="#{patient.firstName}" style="width:100%" required="true"/>
-                                </f:facet>
-                            </p:cellEditor>
+                            <h:outputText value="#{patient.firstName}"/>
                         </p:column>
 
                         <p:column headerText="Middle Name">
-                            <p:cellEditor>
-                                <f:facet name="output">
-                                    <h:outputText value="#{patient.middleName}"/>
-                                </f:facet>
-                                <f:facet name="input">
-                                    <p:inputText value="#{patient.middleName}" style="width:100%" required="true"/>
-                                </f:facet>
-                            </p:cellEditor>
+                            <h:outputText value="#{patient.middleName}"/>
                         </p:column>
 
                         <p:column headerText="Last Name">
-                            <p:cellEditor>
-                                <f:facet name="output">
-                                    <h:outputText value="#{patient.lastName}"/>
-                                </f:facet>
-                                <f:facet name="input">
-                                    <p:inputText value="#{patient.lastName}" style="width:100%" required="true"/>
-                                </f:facet>
-                            </p:cellEditor>
+                            <h:outputText value="#{patient.lastName}"/>
                         </p:column>
 
                         <p:column headerText="Date of Birth">
-                            <p:cellEditor>
-                                <f:facet name="output">
-                                    <h:outputText value="#{patient.dateOfBirth}">
-                                        <f:convertDateTime pattern="yyyy-MM-dd" type="localDate"/>
-                                    </h:outputText>
-                                </f:facet>
-                                <f:facet name="input">
-                                    <p:calendar value="#{patient.dateOfBirth}" style="width:100%" pattern="yyyy-MM-dd">
-                                        <f:convertDateTime pattern="yyyy-MM-dd" type="localDate"/>
-                                    </p:calendar>
-                                </f:facet>
-                            </p:cellEditor>
+                            <h:outputText value="#{patient.dateOfBirth}">
+                                <f:convertDateTime pattern="yyyy-MM-dd" type="localDate"/>
+                            </h:outputText>
                         </p:column>
 
                         <p:column headerText="Email">
-                            <p:cellEditor>
-                                <f:facet name="output">
-                                    <h:outputText value="#{patient.email}"/>
-                                </f:facet>
-                                <f:facet name="input">
-                                    <p:inputText value="#{patient.email}" style="width:100%">
-                                        <f:validateRegex pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"/>
-                                    </p:inputText>
-                                </f:facet>
-                            </p:cellEditor>
+                            <h:outputText value="#{patient.email}"/>
                         </p:column>
 
                         <p:column headerText="Phone">
-                            <p:cellEditor>
-                                <f:facet name="output">
-                                    <h:outputText value="#{patient.contactNumber}"/>
-                                </f:facet>
-                                <f:facet name="input">
-                                    <p:inputText value="#{patient.contactNumber}" style="width:100%"/>
-                                </f:facet>
-                            </p:cellEditor>
+                            <h:outputText value="#{patient.contactNumber}"/>
                         </p:column>
 
-                        <p:column style="width:6rem">
-                            <p:rowEditor editTitle="Edit" cancelTitle="Cancel" saveTitle="Save"/>
+                        <!-- Edit Button -->
+                        <p:column headerText="Edit" style="width:6rem">
+                            <p:column style="width:6rem">
+                                <p:commandButton icon="pi pi-pencil"
+                                                 title="Edit"
+                                                 action="#{navigationBean.navigateToPatientForm(patient)}"
+                                                 ajax="false"
+                                                 process="@this"
+                                                 styleClass="rounded-md bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1"/>
+                            </p:column>
+
                         </p:column>
 
-                        <p:column style="width:6rem">
-                            <p:commandButton icon="pi pi-trash" title="Delete"
+                        <!-- Delete Button -->
+                        <p:column headerText="Delete" style="width:6rem">
+                            <p:commandButton icon="pi pi-trash"
+                                             title="Delete"
                                              action="#{patientTableBean.delete(patient.patientID)}"
                                              update="@form"
-                                             process="@this">
-
-                            <p:confirm header="Confirmation" message="Are you sure you want to delete this patient?"
+                                             process="@this"
+                                             styleClass="rounded-button ui-button-danger">
+                                <p:confirm header="Confirmation"
+                                           message="Are you sure you want to delete this patient?"
                                            icon="pi pi-exclamation-triangle"/>
                             </p:commandButton>
                         </p:column>
+
                     </p:dataTable>
+
                 </div>
             </h:form>
         </div>
@@ -151,4 +116,6 @@
         </p:confirmDialog>
     </ui:define>
 </ui:composition>
+
+
 
