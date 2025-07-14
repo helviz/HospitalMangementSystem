@@ -3,7 +3,6 @@ import jakarta.enterprise.inject.Model;
 import org.example.enums.Speciality;
 import org.example.models.entities.Doctor;
 
-import org.example.models.entities.Doctor;
 import org.example.utilities.HibernateUtil;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
@@ -62,7 +61,7 @@ public class DoctorDAO extends BaseDAO<Doctor>  implements Serializable {
                 existingDoctor.setDateOfBirth(updatedDoctor.getDateOfBirth());
                 existingDoctor.getUser().setPassword(updatedDoctor.getUser().getPassword());
 
-                session.merge(updatedDoctor);
+                session.merge(existingDoctor);
 
                 tx.commit();
             } else {
