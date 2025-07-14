@@ -12,6 +12,9 @@ public class Patient extends Base implements SoftDeletable {
     @Column(name="patient_id")
     private Long patientID;
 
+    @Column(name="email")
+    private String email;
+
     @OneToMany(mappedBy = "patient", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Appointment> appointments = new ArrayList<>();
 
@@ -28,6 +31,14 @@ public class Patient extends Base implements SoftDeletable {
 
     public Long getPatientID() {
         return patientID;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getEmail() {
+        return email;
     }
 
     public void addAppointment(Appointment appointment) {
