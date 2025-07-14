@@ -14,6 +14,7 @@ import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import java.util.Collections;
 
 @Model
 public class MedicalRecordDAO extends BaseDAO<MedicalRecord>  implements Serializable {
@@ -68,16 +69,42 @@ public class MedicalRecordDAO extends BaseDAO<MedicalRecord>  implements Seriali
      * Get all medical records for a specific patient
      */
     public List<MedicalRecord> getMedicalRecordsByPatient(Long patientId) {
+        System.out.println("=== DAO: Getting medical records for patient ID: " + patientId + " ===");
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            // First, let's try a simpler query to see if we can get any records
+            Query<MedicalRecord> simpleQuery = session.createQuery(
+                    "FROM MedicalRecord mr WHERE mr.deleted = false",
+                    MedicalRecord.class
+            );
+            List<MedicalRecord> allRecords = simpleQuery.getResultList();
+            System.out.println("DAO: Total records in database: " + allRecords.size());
+            
+            // Print all records to see their patient IDs
+            for (MedicalRecord record : allRecords) {
+                System.out.println("DAO: Record ID " + record.getRecordID() + 
+                                 " -> Patient ID: " + (record.getPatient() != null ? record.getPatient().getPatientID() : "NULL") +
+                                 " -> Deleted: " + record.isDelete());
+            }
+            
+            // Now try the specific patient query - using the correct field name
             Query<MedicalRecord> query = session.createQuery(
                     "FROM MedicalRecord mr WHERE mr.patient.patientID = :patientId AND mr.deleted = false ORDER BY mr.recordDate DESC",
                     MedicalRecord.class
             );
             query.setParameter("patientId", patientId);
-            return query.getResultList();
+            List<MedicalRecord> results = query.getResultList();
+            System.out.println("DAO: Found " + results.size() + " medical records for patient " + patientId);
+            
+            // Debug: Print each record
+            for (MedicalRecord record : results) {
+                System.out.println("DAO: Record - " + record.toString());
+            }
+            
+            return results;
 
         } catch (Exception e) {
             System.out.println("Error fetching medical records for patient: " + e.getMessage());
+            e.printStackTrace();
             return List.of();
         }
     }
@@ -220,6 +247,30 @@ public class MedicalRecordDAO extends BaseDAO<MedicalRecord>  implements Seriali
         } catch (Exception e) {
             System.out.println("Error searching medical records: " + e.getMessage());
             return List.of();
+        }
+    }
+
+    @Override
+    public List<MedicalRecord> getAll() {
+        System.out.println("=== DAO: Getting ALL medical records ===");
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            Query<MedicalRecord> query = session.createQuery(
+                    "FROM MedicalRecord mr WHERE mr.deleted = false",
+                    MedicalRecord.class
+            );
+            List<MedicalRecord> results = query.getResultList();
+            System.out.println("DAO: Found " + results.size() + " total medical records");
+            
+            // Debug: Print each record
+            for (MedicalRecord record : results) {
+                System.out.println("DAO: All Records - " + record.toString());
+            }
+            
+            return results;
+        } catch (Exception e) {
+            System.out.println("Error fetching all medical records: " + e.getMessage());
+            e.printStackTrace();
+            return Collections.emptyList();
         }
     }
 }

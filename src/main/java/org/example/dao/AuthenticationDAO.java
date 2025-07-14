@@ -16,7 +16,8 @@ public class AuthenticationDAO implements Serializable {
 
     public User authenticateUser(String inputEmail, String inputPassword) {
         Transaction tx = null;
-        try (Session session = HibernateUtil.getSessionFactory().getCurrentSession()) {
+        try {
+            Session session = HibernateUtil.getSessionFactory().getCurrentSession();
             tx = session.beginTransaction();
 
             // Normalize email input
@@ -58,4 +59,5 @@ public class AuthenticationDAO implements Serializable {
             return null;
         }
     }
+
 }

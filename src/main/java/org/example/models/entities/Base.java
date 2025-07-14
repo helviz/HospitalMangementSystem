@@ -20,7 +20,7 @@ public class Base {
     @Column(name="contact_number")
     private String contactNumber;
 
-    @Column(name="email ")
+    @Column(name="email")
     private String email;
 
 //    setters and getters
@@ -72,6 +72,17 @@ public class Base {
     public void setDateOfBirth(LocalDate dateOfBirth) {
         this.dateOfBirth = dateOfBirth;
     }
+
+    public String getFullName() {
+        StringBuilder fullName = new StringBuilder();
+
+        if (firstName != null) fullName.append(firstName).append(" ");
+        if (middleName != null && !middleName.isBlank()) fullName.append(middleName).append(" ");
+        if (lastName != null) fullName.append(lastName);
+
+        return fullName.toString().trim();
+    }
+
 
 
 

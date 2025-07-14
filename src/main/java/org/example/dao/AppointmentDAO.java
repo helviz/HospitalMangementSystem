@@ -12,7 +12,8 @@ import org.hibernate.Transaction;
 import org.hibernate.query.Query;
 
 import java.io.Serializable;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -25,7 +26,7 @@ public class AppointmentDAO extends BaseDAO<Appointment> implements Serializable
     /**
      * Create a new appointment
      */
-    public boolean createAppointment(Long patientId, Long doctorId, LocalDate appointmentDate, AppointmentStatus status) {
+    public boolean createAppointment(Long patientId, Long doctorId, LocalDateTime appointmentDate) {
         Transaction transaction = null;
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             transaction = session.beginTransaction();
@@ -43,7 +44,6 @@ public class AppointmentDAO extends BaseDAO<Appointment> implements Serializable
             if (isDoctorAvailable(session, doctorId, appointmentDate)) {
                 Appointment appointment = new Appointment();
                 appointment.setAppointmentDateTime(appointmentDate);
-                appointment.setStatus(status != null ? status : AppointmentStatus.SCHEDULED);
                 appointment.setPatient(patient);
                 appointment.setDoctor(doctor);
 
@@ -183,7 +183,7 @@ public class AppointmentDAO extends BaseDAO<Appointment> implements Serializable
     /**
      * Get appointments by date range for a doctor
      */
-    public List<Appointment> getAppointmentsByDoctorAndDateRange(Long doctorId, LocalDate startDate, LocalDate endDate) {
+    public List<Appointment> getAppointmentsByDoctorAndDateRange(Long doctorId, LocalDateTime startDate, LocalDateTime endDate) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             Query<Appointment> query = session.createQuery(
                     "FROM Appointment a WHERE a.doctor.doctorID = :doctorId " +
@@ -205,7 +205,7 @@ public class AppointmentDAO extends BaseDAO<Appointment> implements Serializable
     /**
      * Check if doctor is available at specified date/time
      */
-    private boolean isDoctorAvailable(Session session, Long doctorId, LocalDate appointmentDate) {
+    private boolean isDoctorAvailable(Session session, Long doctorId, LocalDateTime appointmentDate) {
         try {
             Query<Long> query = session.createQuery(
                     "SELECT COUNT(a) FROM Appointment a WHERE a.doctor.doctorID = :doctorId " +
@@ -221,6 +221,15 @@ public class AppointmentDAO extends BaseDAO<Appointment> implements Serializable
         } catch (Exception e) {
             System.out.println("Error checking doctor availability: " + e.getMessage());
             return false;
+        }
+    }
+
+    public List<Appointment> findAppointmentsBetween(LocalDateTime start, LocalDateTime end){
+        try(Session session = HibernateUtil.getSessionFactory().openSession()){
+            return session.createQuery("FROM Appointment a WHERE a.appointmentDateTime BETWEEN :start AND :end AND a.deleted = false", Appointment.class)
+                    .setParameter("start", start)
+                    .setParameter("end", end)
+                    .getResultList();
         }
     }
 }

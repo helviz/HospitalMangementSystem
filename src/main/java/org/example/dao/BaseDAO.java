@@ -1,7 +1,7 @@
 package org.example.dao;
 
 import org.example.models.base.SoftDeletable;
-import org.example.models.entities.Doctor;
+
 import org.example.utilities.HibernateUtil;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
@@ -86,6 +86,7 @@ public abstract class BaseDAO<T extends SoftDeletable> {
             if (entity != null) {
                 entity.setDelete(true);
                 session.update(entity);
+                session.flush();
             }
             transaction.commit();
         } catch (Exception e) {
