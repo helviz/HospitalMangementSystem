@@ -9,6 +9,7 @@ import org.example.services.AppointmentService;
 import org.example.services.ServiceException;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -18,13 +19,13 @@ public class AppointmentServiceImpl extends BaseService implements AppointmentSe
     @Inject
     private AppointmentDAO appointmentDAO;
 
-    public boolean createAppointment(Long patientId, Long doctorId, LocalDate appointmentDate, AppointmentStatus status) {
+    public boolean createAppointment(Long patientId, Long doctorId, LocalDateTime appointmentDate) {
         isIdValid(patientId);
         isIdValid(doctorId);
         if (appointmentDate == null) {
             throw new ServiceException("Appointment date cannot be null");
         }
-        return appointmentDAO.createAppointment(patientId, doctorId, appointmentDate, status);
+        return appointmentDAO.createAppointment(patientId, doctorId, appointmentDate);
     }
 
     public Optional<Appointment> getAppointmentById(Long appointmentId) {
@@ -55,7 +56,7 @@ public class AppointmentServiceImpl extends BaseService implements AppointmentSe
         return appointmentDAO.cancelAppointment(appointmentId);
     }
 
-    public List<Appointment> getAppointmentsByDoctorAndDateRange(Long doctorId, LocalDate startDate, LocalDate endDate) {
+    public List<Appointment> getAppointmentsByDoctorAndDateRange(Long doctorId, LocalDateTime startDate, LocalDateTime endDate) {
         isIdValid(doctorId);
         if (startDate == null || endDate == null) {
             throw new ServiceException("Start and end dates cannot be null");
@@ -69,4 +70,26 @@ public class AppointmentServiceImpl extends BaseService implements AppointmentSe
     public List<Appointment> getAllAppointments() {
         return appointmentDAO.getAll();
     }
+
+    public List<Appointment> findAppointmentsBetween(LocalDateTime start, LocalDateTime end){
+        if (start == null || end == null) {
+            throw new ServiceException("Start and end dates cannot be null");
+        }
+        if (end.isBefore(start)) {
+            throw new ServiceException("End date cannot be before start date");
+        }
+
+        return  appointmentDAO.findAppointmentsBetween(start, end);
+    }
+
+    public List<Appointment> findAppointmentsForToday() {
+        LocalDate today = LocalDate.now();
+        LocalDateTime startOfDay = today.atStartOfDay();  // 00:00
+        LocalDateTime endOfDay = today.atTime(23, 59, 59);  // 23:59:59
+
+        return findAppointmentsBetween(startOfDay, endOfDay);
+    }
+
+
+
 }

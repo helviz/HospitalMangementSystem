@@ -5,8 +5,6 @@ import jakarta.inject.Inject;
 import org.example.dao.AuthenticationDAO;
 import org.example.dao.UserDAO;
 import org.example.models.entities.User;
-import org.example.enums.Role;
-import org.example.services.Impl.BaseService;
 import org.example.services.ServiceException;
 import org.example.services.UserService;
 
@@ -88,6 +86,24 @@ public class UserServiceImpl extends BaseService implements UserService {
         isIdValid(userId);
         userDAO.deleteByID(userId);
     }
+
+    public boolean checkEmailUniqueness(String email) {
+        isEmailValid(email);
+        return userDAO.checkEmailUniqueness(email.trim().toLowerCase());
+    }
+
+    public Optional<User> findByEmail(String email) {
+        if (email == null || email.trim().isEmpty()) {
+            return Optional.empty();
+        }
+
+        return userDAO.findByEmail(email.trim().toLowerCase());
+    }
+
+
+
+
+
 
 
 

@@ -5,14 +5,15 @@ import jakarta.inject.Inject;
 import org.example.dao.DoctorDAO;
 import org.example.enums.Speciality;
 import org.example.models.entities.Doctor;
-import org.example.models.entities.Doctor;
 import org.example.services.DoctorService;
-import org.example.services.Impl.BaseService;
 import org.example.services.ServiceException;
 
 import java.time.LocalDate;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @ApplicationScoped
 public class DoctorServiceImpl extends BaseService implements DoctorService {
@@ -61,6 +62,13 @@ public class DoctorServiceImpl extends BaseService implements DoctorService {
         // Use the efficient bulk update method from DAO
         doctorDAO.updateDoctor(doctor);
     }
+
+    public Map<Speciality, List<Doctor>> getDoctorsGroupedBySpeciality() {
+        return doctorDAO.getAll().stream()
+                .collect(Collectors.groupingBy(Doctor::getSpeciality, LinkedHashMap::new, Collectors.toList()));
+    }
+
+
 
     // === FIELD UPDATES ===
 
