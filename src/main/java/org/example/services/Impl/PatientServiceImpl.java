@@ -2,6 +2,7 @@ package org.example.services.Impl;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 import org.example.dao.PatientDAO;
 import org.example.models.entities.Patient;
 import org.example.services.PatientService;
@@ -44,6 +45,7 @@ public class PatientServiceImpl extends BaseService implements PatientService {
     }
 
     @Override
+    @Transactional
     public void updatePatient(Patient patient) {
         if (patient == null) {
             throw new ServiceException("Patient cannot be null");

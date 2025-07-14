@@ -18,6 +18,8 @@ public class MedicalRecordServiceImpl extends BaseService implements MedicalReco
     @Inject
     private MedicalRecordDAO medicalRecordDAO;
 
+
+
     public Optional<MedicalRecord> getMedicalRecordById(Long recordId) {
         isIdValid(recordId);
         return medicalRecordDAO.getMedicalRecordById(recordId);
