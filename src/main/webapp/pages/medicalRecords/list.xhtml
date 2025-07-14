@@ -1,11 +1,75 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:h="http://xmlns.jcp.org/jsf/html"
-      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-      xmlns:f="http://xmlns.jcp.org/jsf/core">
-<f:view>
-    <h:outputLabel value="Hello, world"/>
-</f:view>
-</html>
+<ui:composition template="/pages/templates/layout.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <ui:define name="content">
+        <div class="p-grid">
+            <div class="p-col-12">
+                <p:panel header="Patient Medical Records">
+                    <p:panelGrid columns="2" columnClasses="ui-g-12 ui-md-2,ui-g-12 ui-md-10" layout="grid" styleClass="ui-panelgrid-blank">
+                        <p:outputLabel for="patientAutocomplete" value="Select Patient:"/>
+                        <p:autoComplete id="patientAutocomplete"
+                                        value="#{medicalRecordBean.selectedPatient}"
+                                        completeMethod="#{medicalRecordBean.completePatients}"
+                                        var="patient"
+                                        itemLabel="#{patient.fullName}"
+                                        itemValue="#{patient}"
+                                        converter="patientConverter"
+                                        forceSelection="true"
+                                        placeholder="Search for a patient...">
+                            <p:ajax event="itemSelect" listener="#{medicalRecordBean.onPatientSelect}" update="selectedPatientPanel medicalRecordsPanel"/>
+                        </p:autoComplete>
+                    </p:panelGrid>
+
+                    <p:panel id="selectedPatientPanel" style="margin-top: 20px;" toggleable="true" header="Selected Patient Information">
+                        <p:panelGrid columns="2" rendered="#{not empty medicalRecordBean.selectedPatient}">
+                            <h:outputText value="Full Name:" style="font-weight:bold;"/>
+                            <h:outputText value="#{medicalRecordBean.selectedPatient.fullName}"/>
+                        </p:panelGrid>
+                        <h:outputText value="No patient selected." rendered="#{empty medicalRecordBean.selectedPatient}"/>
+                    </p:panel>
+
+                    <p:panel id="medicalRecordsPanel" header="Past Diagnoses" style="margin-top: 20px;">
+                        <p:carousel value="#{medicalRecordBean.patientMedicalrecords}" var="record" circular="true"
+                                    numVisible="1" numScroll="1" responsive="true"
+                                    rendered="#{not empty medicalRecordBean.patientMedicalrecords}">
+
+                            <p:card style="margin: 10px;">
+                                <f:facet name="title">
+                                    #{record.diagnosis}
+                                </f:facet>
+                                <f:facet name="subtitle">
+                                    <h:outputText value="#{record.recordDate}">
+                                        <f:convertDateTime type="localDate" pattern="EEEE, MMMM d, yyyy"/>
+                                    </h:outputText>
+                                </f:facet>
+
+                                <p>
+                                    Diagnosed by: Dr. #{record.doctor.fullName}
+                                </p>
+
+                            </p:card>
+
+                        </p:carousel>
+
+                        <p:messages id="msg" showDetail="true" closable="true">
+                            <p:autoUpdate/>
+                        </p:messages>
+                        <h:outputText value="No medical records found for this patient."
+                                      rendered="#{empty medicalRecordBean.patientMedicalrecords and not empty medicalRecordBean.selectedPatient}"/>
+                    </p:panel>
+
+                    <div style="margin-top: 20px; text-align: center;">
+                        <p:commandButton value="Create a new Diagnosis"
+                                         action="#{navigationBean.navigateToMedicalRecordForm()}"
+                                         icon="pi pi-plus"
+                                         styleClass="ui-button-raised"/>
+                    </div>
+                </p:panel>
+            </div>
+        </div>
+    </ui:define>
+</ui:composition>

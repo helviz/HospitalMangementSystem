@@ -96,7 +96,7 @@
                                         yearNavigator="true"
                                         placeholder="Select date of birth"
                                         mindate="#{calendarViewBean.minDate}"
-                                        maxdate="#{calendarViewBean.maxDate}"/>
+                                        maxdate="#{calendarViewBean.workMaxDate}"/>
 
                             <p:message for="dateOfBirth" styleClass="text-red-500 text-sm"/>
                         </div>
@@ -142,41 +142,14 @@
                                          maxlength="15"
                                          styleClass="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                                          placeholder="Enter contact number 7********">
-                                <f:validateRegex pattern="^[\+]?[\d\s\-\(\)]{7,15}$"/>
+                                <f:validateRegex pattern="^7\d{8}$" />
                             </p:inputText>
                             <p:message for="contactNumber" styleClass="text-red-500 text-sm"/>
                         </div>
                     </div>
                 </div>
 
-                <!--                Role -->
 
-                <div class="bg-gray-50 p-6 rounded-lg border border-gray-200">
-                    <h2 class="text-xl font-semibold text-gray-800 mb-4 flex items-center">
-                        <i class=" text-blue-600 mr-2"></i>
-                        Roles
-                    </h2>
-                    <div class="space-y-2">
-                        <label for="roles" class="block text-sm font-medium text-gray-700">
-                            Roles <span class="text-red-500">*</span>
-                        </label>
-
-                        <p:selectOneMenu id="roles"
-                                         value="#{staffFormBean.staff.role}"
-                                         required="true"
-                                         requiredMessage="At least one role must be selected"
-                                         styleClass="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                            <f:selectItem itemLabel="Select Role" itemValue=""/>
-                            <f:selectItems value="#{staffFormBean.roles}"/>
-                        </p:selectOneMenu>
-
-                        <p:message for="roles" styleClass="text-red-500 text-sm"/>
-                    </div>
-
-
-                </div>
-
-                <!--                password-->
 
                 <!-- Password -->
                 <div class="bg-gray-50 p-6 rounded-lg border border-gray-200">
@@ -192,7 +165,9 @@
                             </label>
                             <p:password id="password"
                                         value="#{staffFormBean.userPassword}"
-                                        required="true"
+                                        required="#{staffFormBean.editMode}"
+                                        feedback="true"
+                                        toggleMask="true"
                                         requiredMessage="Password is required"
                                         validatorMessage="Password must be at least 6 characters long"
                                         styleClass="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
@@ -226,6 +201,8 @@
                                          action="#{staffFormBean.resetForm}"
                                          update="staffForm"
                                          process="@this"
+                                         partialSubmit="true"
+                                         immediate="true"
                                          ajax="false"
                                          styleClass="px-6 py-3 bg-gray-600 text-white font-medium rounded-md shadow-sm hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors duration-200"
                                          icon="pi pi-refresh">
@@ -233,6 +210,7 @@
                                        message="Are you sure you want to reset the form? All entered data will be lost."
                                        icon="pi pi-exclamation-triangle"/>
                         </p:commandButton>
+
                     </div>
 
 
@@ -242,12 +220,16 @@
                                          value="Cancel"
                                          action="#{staffFormBean.cancelForm}"
                                          ajax="false"
+                                         immediate="true"
+                                         process="@this"
+                                         partialSubmit="true"
                                          styleClass="px-6 py-3 bg-white text-gray-700 font-medium rounded-md border border-gray-300 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors duration-200"
                                          icon="pi pi-times">
                             <p:confirm header="Confirmation"
                                        message="Are you sure you want to cancel? Any unsaved changes will be lost."
                                        icon="pi pi-exclamation-triangle"/>
                         </p:commandButton>
+
                     </div>
                 </div>
 
