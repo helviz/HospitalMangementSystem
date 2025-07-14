@@ -5,7 +5,7 @@ import org.example.enums.AppointmentStatus;
 import org.example.models.base.SoftDeletable;
 
 import java.time.LocalDate;
-import java.util.Date;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name="appointments")
@@ -16,11 +16,11 @@ public class Appointment implements SoftDeletable {
     private Long appointmentID;
 
     @Column(name="appointment_date_time")
-    private LocalDate appointmentDateTime;
+    private LocalDateTime appointmentDateTime;
 
     @Column(name ="appointment_status")
     @Enumerated(EnumType.STRING)
-    private AppointmentStatus status;
+    private AppointmentStatus status = AppointmentStatus.SCHEDULED;
 
     @ManyToOne
     @JoinColumn(name = "patient_id")
@@ -39,11 +39,11 @@ public class Appointment implements SoftDeletable {
         return appointmentID;
     }
 
-    public void setAppointmentDateTime(LocalDate appointmentDateTime) {
+    public void setAppointmentDateTime(LocalDateTime appointmentDateTime) {
         this.appointmentDateTime = appointmentDateTime;
     }
 
-    public LocalDate getAppointmentDateTime() {
+    public LocalDateTime getAppointmentDateTime() {
         return appointmentDateTime;
     }
 

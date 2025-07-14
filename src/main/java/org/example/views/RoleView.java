@@ -1,7 +1,6 @@
 package org.example.views;
 
 import org.example.enums.Role;
-import org.example.models.entities.User;
 
 import java.util.InputMismatchException;
 import java.util.Scanner;

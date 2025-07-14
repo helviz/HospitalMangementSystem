@@ -4,12 +4,13 @@ import org.example.enums.Role;
 import org.example.enums.Speciality;
 import org.example.models.base.SoftDeletable;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 @Table(name = "doctors")
-public class Doctor extends Base implements SoftDeletable {
+public class Doctor extends Base implements SoftDeletable, Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "doctor_id")
@@ -46,6 +47,7 @@ public class Doctor extends Base implements SoftDeletable {
     public void setSpeciality(Speciality speciality) {
         this.speciality = speciality;
     }
+
 
     public Speciality getSpeciality() {
         return speciality;
@@ -105,6 +107,19 @@ public class Doctor extends Base implements SoftDeletable {
                 ", speciality=" + speciality +
                 '}';
     }
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Doctor)) return false;
+        Doctor doctor = (Doctor) o;
+        return doctorID != null && doctorID.equals(doctor.getDoctorID());
+    }
+
+    @Override
+    public int hashCode() {
+        return doctorID != null ? doctorID.hashCode() : 0;
+    }
+
 
 
 
